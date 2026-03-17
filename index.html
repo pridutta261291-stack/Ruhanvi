@@ -692,7 +692,17 @@ function fmtDate(d){
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
 }
-var C=JSON.parse(localStorage.getItem('rv_content')||'null')||Object.assign({},DEF_CONTENT);
+// Always use latest DEF_CONTENT as base, overlay only user-saved overrides
+var _saved=JSON.parse(localStorage.getItem('rv_content')||'null');
+var C=Object.assign({},DEF_CONTENT,_saved||{});
+// Force specific fields to always reflect latest file defaults (never cached)
+C.storyTitle=DEF_CONTENT.storyTitle;
+C.storyP1=DEF_CONTENT.storyP1;
+C.storyP2=DEF_CONTENT.storyP2;
+C.storyP3=DEF_CONTENT.storyP3;
+C.storyQuote=DEF_CONTENT.storyQuote;
+C.storyQuoteAuthor=DEF_CONTENT.storyQuoteAuthor;
+C.storyCta=DEF_CONTENT.storyCta;
 var cons=JSON.parse(localStorage.getItem('rv_cons')||'null')||JSON.parse(JSON.stringify(DEF_CONS));
 var steps=JSON.parse(localStorage.getItem('rv_steps')||'null')||JSON.parse(JSON.stringify(DEF_STEPS));
 var reviews=JSON.parse(localStorage.getItem('rv_reviews')||'null')||JSON.parse(JSON.stringify(DEF_REVIEWS));
