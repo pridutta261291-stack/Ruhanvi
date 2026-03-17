@@ -341,11 +341,9 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
     <div>
       <p class="sl" id="shopLabel"></p>
       <h2 class="st" id="shopTitle"></h2>
-      <details style="max-width:560px;margin-top:14px;">
-        <summary style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;list-style:none;background:var(--deep);color:white;padding:11px 20px;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;font-family:'Jost',sans-serif;font-weight:500;border-left:4px solid var(--gold-light);">
-          <span style="font-size:16px;">✦</span> Why I recommend only bracelets — read this before you buy
-        </summary>
-        <p style="font-size:13px;color:var(--text-mid);line-height:1.9;margin-top:0;padding:16px 18px;background:var(--deep);color:rgba(255,255,255,0.8);font-weight:300;border-left:4px solid var(--gold-light);">Bracelets worn on the wrist absorb the maximum amount of sunlight — the primary source of crystal recharging — and crystals must be worn on specific hands depending on whether you are receiving or giving energy. Anklets use the smallest cut of crystals and are farthest from the sun, so they absorb very little. A pendant is a single stone worn for aesthetic value — beautiful, but its healing reach is limited. The wrist is where the energy centres of the body are most accessible and where a crystal does its deepest work.</p>
+      <details style="margin-top:16px;display:inline-block;">
+        <summary style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:white;background:var(--deep);padding:10px 22px;cursor:pointer;list-style:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;">✦ Why Only Bracelets? ›</summary>
+        <p style="font-size:12px;color:var(--text-mid);line-height:1.85;margin-top:8px;padding:14px 16px;background:var(--warm);border-left:2px solid var(--gold);font-weight:300;max-width:500px;">Bracelets absorb the maximum sunlight and sit on the wrist — where the body's energy centres are most accessible. Crystals are worn on specific hands for receiving or giving energy. Anklets use the smallest cut of crystals and are farthest from the sun. A pendant is one stone — beautiful for aesthetics, but limited in healing reach.</p>
       </details>
     </div>
     <div class="fb-wrap">
@@ -571,6 +569,13 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
           &#128196; Pay with PayPal
         </a>
         <p style="font-size:11px;color:var(--text-muted);line-height:1.5;text-align:center;">Includes Rs. 1900 international shipping &middot; <strong id="payAmtPp" style="color:var(--text);font-weight:600;"></strong></p>
+      </div>
+      <div style="background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:6px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:16px;">✦</span>
+        <div>
+          <p style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--deep);margin-bottom:2px;">Certificate of Authenticity Included</p>
+          <p style="font-size:11px;color:var(--text-mid);line-height:1.5;">Every crystal ships with a certificate confirming it is genuine, ethically sourced and energetically cleansed.</p>
+        </div>
       </div>
       <button id="ssWhatsappBtn" class="cwa" style="background:var(--wa);border:none;cursor:pointer;margin-bottom:0;width:100%;" onclick="sendOrder(event)">
         Send Payment Screenshot on WhatsApp
@@ -1001,7 +1006,10 @@ function openProduct(id){
     '</div>'+
     '<div style="padding:16px 24px;background:var(--gold-pale);display:flex;align-items:center;gap:12px;">'+
       '<span style="font-size:18px;">&#10022;</span>'+
-      '<p style="font-size:12px;color:var(--text-mid);line-height:1.6;margin:0;">Every crystal is sourced from Brazil, Africa & India · Cleansed with moonwater, incense & sage · Ships with certificate of authenticity & handwritten intention card · Delivered in 6-7 business days</p>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;">'+
+      '<span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;background:var(--deep);color:white;padding:5px 12px;font-weight:600;">✦ Certificate of Authenticity</span>'+
+      '<span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);padding:5px 0;">· Sourced from Brazil, Africa & India · Moonwater cleansed · Handwritten intention card · Delivered in 6–7 days</span>'+
+      '</div>'+
     '</div>';
 
   document.getElementById('prodOv').style.display='block';
