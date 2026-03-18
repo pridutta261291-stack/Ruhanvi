@@ -68,8 +68,9 @@ section{padding:90px 6%;}
 #shop{background:var(--white);}
 .shop-hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:44px;flex-wrap:wrap;gap:20px;}
 .fb-wrap{display:flex;gap:8px;flex-wrap:wrap;}
-.fb{padding:7px 16px;border:1px solid var(--border);background:transparent;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mid);cursor:pointer;transition:all 0.2s;}
+.fb{padding:7px 16px;border:1px solid var(--border);background:transparent;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mid);cursor:pointer;transition:all 0.25s;}
 .fb.active,.fb:hover{background:var(--deep);color:white;border-color:var(--deep);}
+.fb.active div,.fb:hover div{color:white !important;opacity:1 !important;}
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;max-width:1200px;}
 .pc{background:var(--ivory);transition:transform 0.25s;display:flex;flex-direction:column;}
 .pc:hover{transform:translateY(-5px);}
@@ -346,13 +347,45 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
         <p style="font-size:12px;color:var(--text-mid);line-height:1.85;margin-top:8px;padding:14px 16px;background:var(--warm);border-left:2px solid var(--gold);font-weight:300;max-width:500px;">Bracelets absorb the maximum sunlight and sit on the wrist — where the body's energy centres are most accessible. Crystals are worn on specific hands for receiving or giving energy. Anklets use the smallest cut of crystals and are farthest from the sun. A pendant is one stone — beautiful for aesthetics, but limited in healing reach.</p>
       </details>
     </div>
-    <div class="fb-wrap">
-      <button class="fb active" onclick="filt('all',this)">All</button>
-      <button class="fb" onclick="filt('protection',this)">Protection</button>
-      <button class="fb" onclick="filt('love',this)">Love</button>
-      <button class="fb" onclick="filt('abundance',this)">Abundance</button>
-      <button class="fb" onclick="filt('clarity',this)">Clarity</button>
-      <button class="fb" onclick="filt('spiritual',this)">Spiritual</button>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;">
+      <button class="fb active" onclick="filt('all',this)" style="display:flex;align-items:center;gap:6px;padding:8px 18px;">
+        <span>✦</span> All
+      </button>
+      <button class="fb" onclick="filt('protection',this)" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:0;">
+        <span style="font-size:18px;">🖤</span>
+        <div style="text-align:left;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Protection</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:none;letter-spacing:0;">Shield · Ground · Guard</div>
+        </div>
+      </button>
+      <button class="fb" onclick="filt('love',this)" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:0;">
+        <span style="font-size:18px;">🩷</span>
+        <div style="text-align:left;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Love</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:none;letter-spacing:0;">Heart · Self-worth · Heal</div>
+        </div>
+      </button>
+      <button class="fb" onclick="filt('abundance',this)" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:0;">
+        <span style="font-size:18px;">✨</span>
+        <div style="text-align:left;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Abundance</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:none;letter-spacing:0;">Wealth · Luck · Manifest</div>
+        </div>
+      </button>
+      <button class="fb" onclick="filt('clarity',this)" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:0;">
+        <span style="font-size:18px;">🔮</span>
+        <div style="text-align:left;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Clarity</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:none;letter-spacing:0;">Focus · Truth · Decision</div>
+        </div>
+      </button>
+      <button class="fb" onclick="filt('spiritual',this)" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:0;">
+        <span style="font-size:18px;">🌙</span>
+        <div style="text-align:left;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;">Spiritual</div>
+          <div style="font-size:10px;opacity:0.7;text-transform:none;letter-spacing:0;">Intuition · Peace · Soul</div>
+        </div>
+      </button>
     </div>
   </div>
   <div class="pg" id="grid"></div>
@@ -891,6 +924,16 @@ function updateConsButtons(id){
     if(num) num.style.display='none';
   }
 }
+var _slideIdx=0;
+function slideImg(dir){
+  _slideIdx=(_slideIdx+dir+3)%3;
+  var track=document.getElementById('sliderTrack');
+  if(track) track.style.transform='translateX(-'+(_slideIdx*33.333)+'%)';
+  for(var i=0;i<3;i++){
+    var dot=document.getElementById('dot'+i);
+    if(dot) dot.style.opacity=i===_slideIdx?'1':'0.3';
+  }
+}
 function openProduct(id){
   var p=prods.find(function(x){return x.id==id;}); if(!p) return;
   var PROD_DATA={
@@ -975,9 +1018,32 @@ function openProduct(id){
   document.getElementById('prodContent').innerHTML=
     '<div style="background:var(--deep);padding:18px 24px;"><p style="font-family:Playfair Display,serif;font-size:17px;font-style:italic;color:rgba(255,255,255,0.92);line-height:1.6;margin:0;">'+hook+'</p></div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;min-height:400px;">'+
-      '<div style="background:'+(CATBG[p.cat]||'#FCE8F0')+';display:flex;align-items:center;justify-content:center;font-size:100px;min-height:300px;position:relative;">'+
-        (p.badge?'<span style="position:absolute;top:14px;left:14px;background:var(--deep);color:white;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;">'+p.badge+'</span>':'')+
-        (p.img?'<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">':p.emoji||'&#128142;')+
+      '<div style="position:relative;min-height:300px;background:'+(CATBG[p.cat]||'#FCE8F0')+';overflow:hidden;">'+
+        (p.badge?'<span style="position:absolute;top:14px;left:14px;background:var(--deep);color:white;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;z-index:3;">'+p.badge+'</span>':'')+
+        // Slider track
+        '<div id="sliderTrack" style="display:flex;width:300%;height:100%;min-height:300px;transition:transform 0.35s ease;">'+
+          // Slide 1 - main product image or emoji
+          '<div style="width:33.333%;min-height:300px;display:flex;align-items:center;justify-content:center;font-size:100px;flex-shrink:0;position:relative;">'+(p.img?'<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">':p.emoji||'&#128142;')+'</div>'+
+          // Slide 2 placeholder
+          '<div style="width:33.333%;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;background:'+(CATBG[p.cat]||'#FCE8F0')+';border-left:1px solid rgba(0,0,0,0.06);">'+
+            '<div style="font-size:32px;margin-bottom:10px;">📷</div>'+
+            '<p style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-align:center;padding:0 20px;">Photo coming soon</p>'+
+          '</div>'+
+          // Slide 3 placeholder
+          '<div style="width:33.333%;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;background:'+(CATBG[p.cat]||'#FCE8F0')+';border-left:1px solid rgba(0,0,0,0.06);">'+
+            '<div style="font-size:32px;margin-bottom:10px;">📷</div>'+
+            '<p style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);text-align:center;padding:0 20px;">Photo coming soon</p>'+
+          '</div>'+
+        '</div>'+
+        // Prev / Next arrows
+        '<button onclick="slideImg(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:3;background:rgba(255,255,255,0.85);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);">&#8249;</button>'+
+        '<button onclick="slideImg(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:3;background:rgba(255,255,255,0.85);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);">&#8250;</button>'+
+        // Dots
+        '<div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3;">'+
+          '<div id="dot0" style="width:7px;height:7px;border-radius:50%;background:var(--deep);transition:opacity 0.2s;"></div>'+
+          '<div id="dot1" style="width:7px;height:7px;border-radius:50%;background:var(--deep);opacity:0.3;transition:opacity 0.2s;"></div>'+
+          '<div id="dot2" style="width:7px;height:7px;border-radius:50%;background:var(--deep);opacity:0.3;transition:opacity 0.2s;"></div>'+
+        '</div>'+
       '</div>'+
       '<div style="padding:28px 24px;display:flex;flex-direction:column;justify-content:space-between;">'+
         '<div>'+
@@ -1012,7 +1078,7 @@ function openProduct(id){
       '</div>'+
     '</div>';
 
-  document.getElementById('prodOv').style.display='block';
+  _slideIdx=0;var track=document.getElementById('sliderTrack');if(track)track.style.transform='translateX(0)';document.getElementById('prodOv').style.display='block';
   document.body.style.overflow='hidden';
 }
 function closeProd(){
