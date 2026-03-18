@@ -312,6 +312,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
       <a id="heroCta1" class="hero-btn" target="_blank" rel="noopener"></a>
       <button class="hero-btn" id="heroCta2" onclick="document.querySelector('#shop').scrollIntoView({behavior:'smooth'})"></button>
       <button class="hero-btn" onclick="document.querySelector('#zodiac').scrollIntoView({behavior:'smooth'})">Shop by Zodiac ✦</button>
+      <button class="hero-btn" onclick="document.querySelector('#intention').scrollIntoView({behavior:'smooth'})">Intention & Personal Guidance ✦</button>
     </div>
   </div>
 
@@ -399,6 +400,75 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   </div>
   <div id="zodiacGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:1100px;margin:0 auto 60px;"></div>
   <div id="zodiacDetail" style="display:none;max-width:800px;margin:0 auto;"></div>
+</section>
+
+<section id="intention" style="background:#3D1535;color:white;padding:90px 6%;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:60px;">
+      <p class="sl" style="color:var(--gold-light);">A different kind of support</p>
+      <h2 class="st" style="color:white;font-size:clamp(30px,4vw,52px);">Intention Setting &<br><em>Personal Guidance</em></h2>
+      <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.85;max-width:580px;margin:18px auto 0;font-weight:300;">Most people receive a crystal and carry it hopefully. Very few people know how to work with it. This programme changes that — pairing your crystal with daily personal guidance to make sure the energy you are trying to shift actually shifts.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;margin-bottom:60px;">
+
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,192,210,0.2);padding:36px 28px;position:relative;">
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-light);margin-bottom:12px;">21 Days</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:white;font-weight:400;margin-bottom:12px;">The Foundation</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;margin-bottom:20px;">Three weeks of daily intention work, habit anchoring and personal check-ins. We begin by reading your energy, prescribing your crystal, and building a daily practice around it. Every morning you know exactly what you are working with and why.</p>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;">
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Daily WhatsApp guidance</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Personalised crystal prescription included</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Weekly energy check-in call</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Morning intention + evening reflection prompts</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Daily WhatsApp check-in — you are never doing this alone</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Voice note support — ask anything, any time</li>
+        </ul>
+        
+        <button id="intBtn1" data-inr="15000" onclick="addConsCart('i1');toast(fmtPrice(15000)+' added to your bag')" style="background:var(--gold-light);color:var(--deep);padding:13px 28px;border:none;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;cursor:pointer;width:100%;transition:opacity 0.2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">₹15,000 — Add to Bag</button>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.11);border:1px solid rgba(242,184,204,0.45);padding:36px 28px;position:relative;">
+        <div style="position:absolute;top:16px;right:16px;background:var(--gold-light);color:var(--deep);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;font-weight:700;">Most chosen</div>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-light);margin-bottom:12px;">40 Days</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:white;font-weight:400;margin-bottom:12px;">The Shift</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;margin-bottom:20px;">40 days is the minimum time the ancient traditions prescribe for any genuine energetic shift. This programme goes deeper — we work through resistance, recalibrate when life interrupts, and make sure the change you are trying to make actually takes root in your daily life.</p>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;">
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Everything in The Foundation</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Mid-programme energy re-reading</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Crystal recalibration at day 21 if needed</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Bi-weekly personal calls</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Daily WhatsApp check-in throughout all 40 days</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Voice note + text support — real time, not templated</li>
+        </ul>
+        
+        <button id="intBtn2" data-inr="25000" onclick="addConsCart('i2');toast(fmtPrice(25000)+' added to your bag')" style="background:var(--gold-light);color:var(--deep);padding:13px 28px;border:none;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;cursor:pointer;width:100%;transition:opacity 0.2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">₹25,000 — Add to Bag</button>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,192,210,0.2);padding:36px 28px;position:relative;">
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-light);margin-bottom:12px;">90 Days</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:white;font-weight:400;margin-bottom:12px;">The Transformation</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.85;font-weight:300;margin-bottom:20px;">For those committed to a fundamental change — in how they carry themselves, how they make decisions, how they respond to the world. Three months of daily presence, energy work and personal accountability. This is where real shifts become permanent ones.</p>
+        <ul style="list-style:none;padding:0;margin:0 0 24px;">
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Everything in The Shift</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Full crystal set — updated each month</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Weekly personal calls</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Priority access — always answered within 1 hour</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Daily WhatsApp check-in — every single day for 90 days</li>
+          <li style="font-size:12px;color:rgba(255,255,255,0.5);padding:6px 0;display:flex;align-items:center;gap:8px;"><span style="color:var(--gold-light);">✦</span> Unlimited voice note & text support throughout</li>
+        </ul>
+        
+        <button id="intBtn3" data-inr="55000" onclick="addConsCart('i3');toast(fmtPrice(55000)+' added to your bag')" style="background:var(--gold-light);color:var(--deep);padding:13px 28px;border:none;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700;cursor:pointer;width:100%;transition:opacity 0.2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">₹55,000 — Add to Bag</button>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,192,210,0.2);padding:32px;max-width:680px;margin:0 auto;">
+      <p style="font-family:'Playfair Display',serif;font-size:19px;color:white;font-style:italic;line-height:1.7;margin-bottom:12px;">Progress does not live in what you wear or what you wish for. It lives in what you do — every single day, with intention. Crystals carry energy. But energy without routine, without habit, without someone who understands your specific situation guiding how you harness it — dissipates. I make sure it does not.</p>
+      <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);">— Priyanka, Founder</p>
+    </div>
+
+  </div>
 </section>
 
 <section id="story">
@@ -658,7 +728,7 @@ var DEF_CONTENT={
   heroHeading:'Where the soul finds its sacred path',
   heroHeadingItalic:'sacred path',
   heroSub:'Browse freely. Trust your instincts. And if something in you is not sure — a short conversation before you choose can change everything you pick.',
-  heroCta1:'Book a Reading',heroCta2:'Explore Crystals',
+  heroCta1:'Book a Reading ✦',heroCta2:'Explore Crystals ✦',
   heroEmoji:'&#128142;',heroTag1:'&#10022; Moonlight cleansed',heroTag2:'&#10022; Energetically prescribed',heroTag3:'&#10022; Ships Worldwide',
   marquee:'Red Jasper,Garnet,Labradorite,Energy Reading,Amethyst,Birth Chart,Citrine,Tiger Eye,Protection Set,Abundance Set,7 Chakra,Pyrite,Black Tourmaline,Rose Quartz',
   servLabel:'Work with me',servTitle:'The reading that actually tells you the truth',
@@ -702,7 +772,10 @@ var DEF_CONS=[
   {id:'c3',icon:'&#127769;',name:'The Year Ahead',desc:'Every year has its own flavour of difficulty and its own gifts. This reading tells you what the next 12 months are genuinely asking of you — in work, in love, in health, in the parts of life you do not talk about at dinner.',price:1299,duration:'45 minutes'},
   {id:'c4',icon:'&#10084;&#65039;',name:'Relationship Reading',desc:'Some connections feel like recognition. Others feel like work that never ends. I read both energy maps — what they bring, what they trigger, what is possible between them. For the ones you cannot stop thinking about, and the ones you cannot understand.',price:1299,duration:'50 minutes'},
   {id:'c5',icon:'&#128188;',name:'Career & Business Reading',desc:'The question is never just what to do. It is when. I read your energy cycles to tell you what you are built for, what you are fighting against in yourself, and whether this is the moment to move or the moment to wait.',price:1299,duration:'50 minutes'},
-  {id:'c6',icon:'&#10024;',name:'Full Reading + Crystal Set',desc:'A complete reading of your energy map followed by a crystal set chosen specifically for where you are in this chapter. Everything I know, applied to exactly where you are right now.',price:1299,duration:'Full session + crystals'}
+  {id:'c6',icon:'&#10024;',name:'Full Reading + Crystal Set',desc:'A complete reading of your energy map followed by a crystal set chosen specifically for where you are in this chapter. Everything I know, applied to exactly where you are right now.',price:1299,duration:'Full session + crystals'},
+  {id:'i1',icon:'🌱',name:'21 Days — The Foundation',desc:'Daily WhatsApp guidance, personalised crystal prescription, weekly energy check-in call, morning intention and evening reflection prompts. Three weeks of daily practice built around your specific energy.',price:15000,duration:'21 days · No shipping'},
+  {id:'i2',icon:'🌿',name:'40 Days — The Shift',desc:'Everything in The Foundation plus a mid-programme energy re-reading, crystal recalibration at day 21 if needed, and bi-weekly personal calls. 40 days is the minimum for any genuine energetic shift.',price:25000,duration:'40 days · No shipping'},
+  {id:'i3',icon:'🌳',name:'90 Days — The Transformation',desc:'Everything in The Shift plus a full crystal set updated each month, weekly calls, and priority 1-hour response. Three months of daily presence for changes that become permanent.',price:55000,duration:'90 days · No shipping'}
 ];
 var DEF_PRODS=[
   {id:1,name:'Red Jasper',intent:'Vitality · Stability · Courage',price:1299,emoji:'🔴',cat:'protection',badge:'',img:''},
@@ -760,6 +833,8 @@ C.siteTagline=DEF_CONTENT.siteTagline;
 C.footerTagline=DEF_CONTENT.footerTagline;
 C.servTitle=DEF_CONTENT.servTitle;
 C.servSub=DEF_CONTENT.servSub;
+C.heroCta1=DEF_CONTENT.heroCta1;
+C.heroCta2=DEF_CONTENT.heroCta2;
 var cons=JSON.parse(localStorage.getItem('rv_cons')||'null')||JSON.parse(JSON.stringify(DEF_CONS));
 var steps=JSON.parse(localStorage.getItem('rv_steps')||'null')||JSON.parse(JSON.stringify(DEF_STEPS));
 var reviews=JSON.parse(localStorage.getItem('rv_reviews')||'null')||JSON.parse(JSON.stringify(DEF_REVIEWS));
@@ -1910,6 +1985,14 @@ function setCurrency(val){
   renderServices();
   renderZodiac();
   renderCart();
+  // Update intention programme buttons
+  ['intBtn1','intBtn2','intBtn3'].forEach(function(id){
+    var btn=document.getElementById(id);
+    if(btn){
+      var inr=parseInt(btn.getAttribute('data-inr'));
+      btn.textContent=fmtPrice(inr)+' — Add to Bag';
+    }
+  });
   // update all price displays on page
   document.querySelectorAll('.price-inr').forEach(function(el){
     var inr=parseInt(el.getAttribute('data-inr'));
