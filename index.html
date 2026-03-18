@@ -588,7 +588,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
             <span>Products</span><span id="upiProductAmt" style="font-weight:500;color:var(--text);"></span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-mid);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--border);">
-            <span>Delivery Charges</span><span style="font-weight:500;color:var(--text);">Rs.150</span>
+            <span>Delivery Charges</span><span style="font-weight:500;color:var(--text);" id="deliveryAmt">Rs.150</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;">
             <span style="font-weight:500;color:var(--text);">Total to Pay</span><span id="upiTotalAmt" style="font-weight:700;color:var(--deep);"></span>
@@ -601,7 +601,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
         <a id="paypalBtn" href="https://paypal.me/karakarlington" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#003087;color:white;padding:12px;border-radius:6px;text-decoration:none;font-family:Jost,sans-serif;font-size:12px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">
           &#128196; Pay with PayPal
         </a>
-        <p style="font-size:11px;color:var(--text-muted);line-height:1.5;text-align:center;">Includes Rs. 1900 international shipping &middot; <strong id="payAmtPp" style="color:var(--text);font-weight:600;"></strong></p>
+        <p style="font-size:11px;color:var(--text-muted);line-height:1.5;text-align:center;" id="paypalNote">Includes Rs. 1900 international shipping &middot; <strong id="payAmtPp" style="color:var(--text);font-weight:600;"></strong></p>
       </div>
       <div style="background:var(--gold-pale);border:1px solid var(--gold-light);border-radius:6px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
         <span style="font-size:16px;">✦</span>
@@ -1180,16 +1180,21 @@ function renderCart(){
     '</div>';
   });
   body.innerHTML=html;
-  var upiShipping=150;
+  // No shipping if only consultations booked
+  var pkeys2=Object.keys(cart).filter(function(k){return cart[k]>0;});
+  var upiShipping=pkeys2.length>0?150:0;
   var upiTotal=tot+upiShipping;
   if(currency==='INR'){
     document.getElementById('cartTot').textContent='Rs.'+upiTotal;
     document.getElementById('upiPaySection').style.display='block';
     document.getElementById('paypalSection').style.display='none';
+    var dAmt=document.getElementById('deliveryAmt');
+    if(dAmt) dAmt.textContent=upiShipping>0?'Rs.150':'FREE — no shipping on consultations';
   } else {
-    var totalUSD=((tot+1900)/93).toFixed(2);
+    var intlShipping=pkeys2.length>0?1900:0;
+    var totalUSD=((tot+intlShipping)/93).toFixed(2);
     var productUSD=(tot/93).toFixed(2);
-    var shipUSD=(1900/93).toFixed(2);
+    var shipUSD=(intlShipping/93).toFixed(2);
     document.getElementById('cartTot').textContent='$'+totalUSD+' USD';
     document.getElementById('upiPaySection').style.display='none';
     document.getElementById('paypalSection').style.display='block';
@@ -1206,13 +1211,13 @@ function renderCart(){
   var pp=document.getElementById('payAmtPp'); if(pp) pp.textContent='Rs. '+tot;
   var ppBtn=document.getElementById('paypalBtn');
   if(ppBtn){
-    var shippingINR=1900;
+    var shippingINR=Object.keys(cart).filter(function(k){return cart[k]>0;}).length>0?1900:0;
     var productUSD=(tot/93).toFixed(2);
     var shippingUSD=(shippingINR/93).toFixed(2);
     var totalUSD=((tot+shippingINR)/93).toFixed(2);
     ppBtn.href='https://paypal.me/karakarlington/'+totalUSD+'USD';
     var ppAmtEl=document.getElementById('payAmtPp');
-    if(ppAmtEl) ppAmtEl.innerHTML='Product: <strong>$'+productUSD+'</strong> + Shipping: <strong>$'+shippingUSD+'</strong> = <strong style="color:var(--deep)">$'+totalUSD+' USD</strong>';
+    if(ppAmtEl) ppAmtEl.innerHTML=shippingINR>0?'Product: <strong>$'+productUSD+'</strong> + Shipping: <strong>$'+shippingUSD+'</strong> = <strong style="color:var(--deep)">$'+totalUSD+' USD</strong>':'Consultation: <strong>$'+productUSD+'</strong> · <strong style="color:var(--deep)">No shipping charge</strong>';
   }
 }
 
@@ -1253,7 +1258,8 @@ function sendOrder(e){
 
   if(!itemsWA){toast('Your cart is empty');return;}
 
-  var upiTotal=tot+150;
+  var hasProducts=Object.keys(cart).filter(function(k){return cart[k]>0;}).length>0;
+  var upiTotal=tot+(hasProducts?150:0);
 
   // Auto-save to Orders tab
   var today=new Date();
@@ -1279,7 +1285,7 @@ function sendOrder(e){
     +'📍 Address: '+encodeURIComponent(addr)+'%0A%0A'
     +'🛒 Items:'+itemsWA+'%0A%0A'
     +'💰 Products: Rs.'+tot+'%0A'
-    +'🚚 Delivery: Rs.150%0A'
+    +'🚚 Delivery: '+(Object.keys(cart).filter(function(k){return cart[k]>0;}).length>0?'Rs.150':'FREE — consultation booking')+'%0A'
     +'✅ Total: Rs.'+upiTotal+'%0A'
     +'💳 UPI: 9051266338@jupiteraxis%0A%0A'
     +'[Sending payment screenshot now 📸]';
