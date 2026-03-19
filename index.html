@@ -285,6 +285,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
     <li><a href="#services">Consult</a></li>
     <li><a href="#shop">Shop</a></li>
     <li><a href="#zodiac">Zodiac</a></li>
+    <li><a href="#intention">Guidance</a></li>
     <li><a href="#story">Our Story</a></li>
     <li><a href="#contact">Connect</a></li>
   </ul>
@@ -711,6 +712,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
         <button class="atab" onclick="showTab('reviews',this)">&#11088; Reviews</button>
         <button class="atab" onclick="showTab('contact',this)">&#128222; Contact</button>
         <button class="atab" onclick="showTab('orders',this)">&#128230; Orders</button>
+        <button class="atab" onclick="showTab('guidance',this)">&#127807; Guidance</button>
         <button class="atab" onclick="showTab('settings',this)">&#9881; Settings</button>
       </div>
       <div class="adm-body" id="admBody"></div>
@@ -892,7 +894,7 @@ var CATBG={spiritual:'#EDE8F5',protection:'#E8E5E0',love:'#F5E8E8',clarity:'#EEF
 
 function renderServices(){
   var g=document.getElementById('servGrid'); if(!g) return;
-  g.innerHTML=cons.map(function(c){
+  g.innerHTML=cons.filter(function(c){return c.id.charAt(0)==='c';}).map(function(c){
     var effP=(c.discount&&c.discount>0)?Math.round(c.price*(1-c.discount/100)):c.price;
     var inCart=consCart[c.id]||0;
     var priceHtml=c.discount&&c.discount>0?
@@ -1495,6 +1497,7 @@ function showTab(tab,btn){
   else if(tab==='reviews') tabReviews(b);
   else if(tab==='contact') tabContact(b);
   else if(tab==='orders') tabOrders(b);
+  else if(tab==='guidance') tabGuidance(b);
   else tabSettings(b);
 }
 function v(id){var el=document.getElementById(id);return el?el.value:'';}
@@ -1527,7 +1530,7 @@ function tabServices(b){
   '<div class="afg"><label class="afl">Section heading</label><input class="afi" id="sTtl" value="'+C.servTitle+'"></div>'+
   '<div class="afg"><label class="afl">Section subtitle</label><textarea class="afta" id="sSub">'+C.servSub+'</textarea></div>'+
   '<button class="asave" onclick="C.servLabel=v(\'sLbl\');C.servTitle=v(\'sTtl\');C.servSub=v(\'sSub\');saveC();renderSite();toast(\'Section saved!\')">Save Section</button></div>'+
-  cons.map(function(c){
+  cons.filter(function(c){return c.id.charAt(0)==='c';}).map(function(c){
     return '<div class="rv-edit-card">'+
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span>'+c.icon+'</span><strong style="font-size:13px;">'+c.name+'</strong></div>'+
       '<div class="afg"><label class="afl">Name</label><input class="afi" id="cn_'+c.id+'" value="'+c.name+'"></div>'+
@@ -1878,6 +1881,98 @@ function sendUpdateWA(idx){
     +'🚚 Est. Delivery: '+encodeURIComponent(o.deliveryDate)+'%0A'
     +'📋 Status: '+encodeURIComponent(o.status.toUpperCase())+'%0A%0A'
     +'Thank you for choosing Ruhanvi 🌸 Your crystals have been cleansed and charged with intention before dispatch.';
+  window.open('https://wa.me/91'+o.phone+'?text='+msg,'_blank');
+}
+
+function tabGuidance(b){
+  var progs=[
+    {id:'i1',name:'21 Days — The Foundation',price:15000,days:21,icon:'🌱'},
+    {id:'i2',name:'40 Days — The Shift',price:25000,days:40,icon:'🌿'},
+    {id:'i3',name:'90 Days — The Transformation',price:55000,days:90,icon:'🌳'}
+  ];
+
+  // Get all orders that have guidance programmes
+  var guidanceOrders=orders.filter(function(o){
+    return o.products&&(o.products.indexOf('21 Days')>-1||o.products.indexOf('40 Days')>-1||o.products.indexOf('90 Days')>-1);
+  });
+
+  var html='<h3 class="ast">Intention & Personal Guidance</h3>';
+
+  // Programme overview cards
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;">';
+  progs.forEach(function(p){
+    var count=guidanceOrders.filter(function(o){return o.products&&o.products.indexOf(p.days+' Days')>-1;}).length;
+    html+='<div style="background:var(--warm);border-radius:8px;padding:12px;text-align:center;">';
+    html+='<div style="font-size:22px;margin-bottom:4px;">'+p.icon+'</div>';
+    html+='<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;">'+p.days+' Days</div>';
+    html+='<div style="font-size:18px;font-weight:700;color:var(--deep);">'+count+'</div>';
+    html+='<div style="font-size:10px;color:var(--text-muted);">active clients</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Active guidance clients
+  if(!guidanceOrders.length){
+    html+='<div class="emp"><div class="ei">🌱</div><p>No guidance clients yet. When a customer purchases a programme it will appear here.</p></div>';
+  } else {
+    html+='<div class="asec-title" style="margin-bottom:10px;font-size:13px;font-weight:500;">Active Clients ('+guidanceOrders.length+')</div>';
+    guidanceOrders.forEach(function(o,i){
+      var realIdx=orders.indexOf(o);
+      var statusColor=o.guidanceStatus==='completed'?'#1565C0':o.guidanceStatus==='active'?'#2E7D32':'#E65100';
+      var statusBg=o.guidanceStatus==='completed'?'#E3F2FD':o.guidanceStatus==='active'?'#E8F5E9':'#FFF3E0';
+      var status=o.guidanceStatus||'pending';
+      html+='<div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--white);">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
+      html+='<div><div style="font-size:14px;font-weight:600;color:var(--text);">'+o.customerName+'</div>';
+      html+='<div style="font-size:12px;color:var(--text-muted);">📱 '+o.phone+' · '+o.products+'</div></div>';
+      html+='<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:'+statusBg+';color:'+statusColor+';letter-spacing:0.06em;text-transform:uppercase;font-weight:500;">'+status+'</span>';
+      html+='</div>';
+      // Progress tracker
+      var prog=parseInt(o.guidanceDay||0);
+      var total=o.products.indexOf('90 Days')>-1?90:o.products.indexOf('40 Days')>-1?40:21;
+      var pct=Math.min(100,Math.round((prog/total)*100));
+      html+='<div style="margin-bottom:10px;">';
+      html+='<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px;"><span>Day '+prog+' of '+total+'</span><span>'+pct+'%</span></div>';
+      html+='<div style="background:var(--border);border-radius:4px;height:6px;"><div style="background:var(--deep);border-radius:4px;height:6px;width:'+pct+'%;transition:width 0.3s;"></div></div>';
+      html+='</div>';
+      // Notes
+      html+='<div class="afg"><label class="afl">Daily notes / check-in log</label><textarea class="afta" id="gnote'+realIdx+'" placeholder="Log today check-in, observations, crystal adjustments...">'+(o.guidanceNotes||'')+'</textarea></div>';
+      html+='<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">';
+      html+='<div style="display:flex;align-items:center;gap:6px;"><label style="font-size:11px;color:var(--text-muted);">Day:</label><input type="number" class="afi" style="width:70px;padding:6px 8px;" id="gday'+realIdx+'" value="'+(o.guidanceDay||0)+'" min="0" max="'+total+'"></div>';
+      html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="saveGuidance('+realIdx+')">Save</button>';
+      if(status!=='active') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#2E7D32;" onclick="setGuidanceStatus('+realIdx+',\"active\")">Mark Active</button>';
+      if(status!=='completed') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" onclick="setGuidanceStatus('+realIdx+',\"completed\")">Mark Complete</button>';
+      html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:var(--wa);" onclick="sendGuidanceWA('+realIdx+')">WhatsApp 💬</button>';
+      html+='</div></div>';
+    });
+  }
+
+  b.innerHTML=html;
+}
+
+function saveGuidance(idx){
+  var day=parseInt(document.getElementById('gday'+idx).value)||0;
+  var notes=document.getElementById('gnote'+idx).value;
+  orders[idx].guidanceDay=day;
+  orders[idx].guidanceNotes=notes;
+  saveOrders();
+  toast('Client progress saved!');
+}
+
+function setGuidanceStatus(idx,status){
+  orders[idx].guidanceStatus=status;
+  saveOrders();
+  toast('Status updated: '+status);
+  tabGuidance(document.getElementById('admBody'));
+}
+
+function sendGuidanceWA(idx){
+  var o=orders[idx]; if(!o||!o.phone) return;
+  var day=o.guidanceDay||1;
+  var msg='Hi '+encodeURIComponent(o.customerName)+'! 🌱%0A%0A'
+    +'Day '+day+' check-in for your '+encodeURIComponent(o.products)+' programme.%0A%0A'
+    +'How are you feeling today? Any shifts you have noticed?%0A%0A'
+    +'— Priyanka, Ruhanvi 🙏';
   window.open('https://wa.me/91'+o.phone+'?text='+msg,'_blank');
 }
 
