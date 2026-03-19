@@ -322,39 +322,62 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
     <div class="orb" id="heroOrb" style="background:radial-gradient(circle at 35% 30%,rgba(255,255,255,0.2),rgba(212,84,122,0.35) 45%,rgba(139,58,90,0.55));box-shadow:0 0 80px rgba(212,84,122,0.35),inset 0 0 40px rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);" >
       <span id="heroEmoji" style="display:none;"></span>
       <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-        <!-- Full moon base -->
-        <circle cx="80" cy="80" r="72" fill="#FFF8DC" opacity="0.95"/>
-        <circle cx="80" cy="80" r="72" fill="none" stroke="#F5DEB3" stroke-width="1.5" opacity="0.6"/>
-        <!-- Soft glow ring -->
-        <circle cx="80" cy="80" r="72" fill="radial" opacity="0.3"/>
-        <!-- Mare / dark patches - authentic lunar maria -->
-        <!-- Mare Imbrium (top left) -->
-        <ellipse cx="58" cy="52" rx="20" ry="16" fill="#C8B89A" opacity="0.45" transform="rotate(-15 58 52)"/>
-        <!-- Mare Serenitatis (top center-right) -->
-        <ellipse cx="92" cy="55" rx="13" ry="11" fill="#CBBB9E" opacity="0.38" transform="rotate(10 92 55)"/>
-        <!-- Mare Tranquillitatis (center right) -->
-        <ellipse cx="98" cy="78" rx="16" ry="12" fill="#C4B494" opacity="0.42" transform="rotate(20 98 78)"/>
-        <!-- Mare Crisium (right edge) -->
-        <ellipse cx="112" cy="60" rx="8" ry="7" fill="#C2B290" opacity="0.50" transform="rotate(5 112 60)"/>
-        <!-- Mare Nubium (bottom center) -->
-        <ellipse cx="75" cy="105" rx="14" ry="10" fill="#CDB99F" opacity="0.38" transform="rotate(-10 75 105)"/>
-        <!-- Mare Fecunditatis (bottom right) -->
-        <ellipse cx="100" cy="100" rx="11" ry="9" fill="#C8B49A" opacity="0.40" transform="rotate(15 100 100)"/>
-        <!-- Oceanus Procellarum (left large) -->
-        <ellipse cx="52" cy="80" rx="18" ry="24" fill="#C6B696" opacity="0.32" transform="rotate(5 52 80)"/>
-        <!-- Craters -->
-        <circle cx="68" cy="38" r="5" fill="none" stroke="#B8A882" stroke-width="1" opacity="0.6"/>
-        <circle cx="68" cy="38" r="2" fill="#C8B890" opacity="0.4"/>
-        <circle cx="110" cy="85" r="4" fill="none" stroke="#B5A47E" stroke-width="1" opacity="0.55"/>
-        <circle cx="45" cy="100" r="3.5" fill="none" stroke="#BAA884" stroke-width="0.8" opacity="0.5"/>
-        <circle cx="45" cy="100" r="1.5" fill="#C2B088" opacity="0.35"/>
-        <circle cx="90" cy="120" r="3" fill="none" stroke="#B8A880" stroke-width="0.8" opacity="0.5"/>
-        <circle cx="55" cy="65" r="2.5" fill="none" stroke="#BCA886" stroke-width="0.7" opacity="0.45"/>
-        <circle cx="120" cy="70" r="2" fill="none" stroke="#B8A47C" stroke-width="0.7" opacity="0.5"/>
-        <circle cx="72" cy="115" r="2" fill="none" stroke="#BAA880" stroke-width="0.7" opacity="0.4"/>
-        <circle cx="35" cy="72" r="3" fill="none" stroke="#B8A47E" stroke-width="0.8" opacity="0.45"/>
-        <!-- Highlight (light reflection top-left) -->
-        <ellipse cx="55" cy="42" rx="18" ry="12" fill="white" opacity="0.12" transform="rotate(-25 55 42)"/>
+        <defs>
+          <clipPath id="leftHalf"><rect x="0" y="0" width="80" height="160"/></clipPath>
+          <clipPath id="rightHalf"><rect x="80" y="0" width="80" height="160"/></clipPath>
+          <radialGradient id="sunGrad" cx="40%" cy="38%" r="60%">
+            <stop offset="0%" stop-color="#FFF5CC"/>
+            <stop offset="40%" stop-color="#FFD84D"/>
+            <stop offset="100%" stop-color="#FF8C00"/>
+          </radialGradient>
+          <radialGradient id="moonGrad" cx="60%" cy="38%" r="60%">
+            <stop offset="0%" stop-color="#F8F4E8"/>
+            <stop offset="50%" stop-color="#D4C9A8"/>
+            <stop offset="100%" stop-color="#A89878"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Sun — left half -->
+        <g clip-path="url(#leftHalf)">
+          <!-- Sun rays -->
+          <g stroke="#FFB300" stroke-width="2.5" stroke-linecap="round" opacity="0.85">
+            <line x1="80" y1="80" x2="80" y2="16"/>
+            <line x1="80" y1="80" x2="35" y2="28"/>
+            <line x1="80" y1="80" x2="16" y2="68"/>
+            <line x1="80" y1="80" x2="22" y2="118"/>
+            <line x1="80" y1="80" x2="58" y2="138"/>
+          </g>
+          <!-- Sun circle -->
+          <circle cx="80" cy="80" r="52" fill="url(#sunGrad)"/>
+          <!-- Sun surface texture -->
+          <circle cx="62" cy="68" r="6" fill="#FFB300" opacity="0.2"/>
+          <circle cx="54" cy="88" r="4" fill="#FF8C00" opacity="0.15"/>
+          <circle cx="70" cy="100" r="5" fill="#FFB300" opacity="0.18"/>
+          <!-- Shine -->
+          <ellipse cx="62" cy="56" rx="14" ry="9" fill="white" opacity="0.18" transform="rotate(-20 62 56)"/>
+        </g>
+
+        <!-- Moon — right half -->
+        <g clip-path="url(#rightHalf)">
+          <circle cx="80" cy="80" r="52" fill="url(#moonGrad)"/>
+          <!-- Maria -->
+          <ellipse cx="98" cy="62" rx="12" ry="9" fill="#B8A882" opacity="0.4" transform="rotate(10 98 62)"/>
+          <ellipse cx="112" cy="84" rx="9" ry="7" fill="#B5A47E" opacity="0.38"/>
+          <ellipse cx="96" cy="100" rx="10" ry="7" fill="#BAA87E" opacity="0.35" transform="rotate(-8 96 100)"/>
+          <!-- Craters -->
+          <circle cx="104" cy="52" r="4" fill="none" stroke="#A89470" stroke-width="0.8" opacity="0.6"/>
+          <circle cx="104" cy="52" r="1.5" fill="#B8A880" opacity="0.35"/>
+          <circle cx="122" cy="72" r="3" fill="none" stroke="#A89070" stroke-width="0.7" opacity="0.55"/>
+          <circle cx="108" cy="112" r="2.5" fill="none" stroke="#AA9474" stroke-width="0.7" opacity="0.5"/>
+          <!-- Shine -->
+          <ellipse cx="92" cy="56" rx="10" ry="7" fill="white" opacity="0.12" transform="rotate(15 92 56)"/>
+        </g>
+
+        <!-- Dividing line -->
+        <line x1="80" y1="28" x2="80" y2="132" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- Outer ring -->
+        <circle cx="80" cy="80" r="52" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
       </svg>
       <div class="ftag ft1" id="heroTag1" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);"></div>
       <div class="ftag ft2" id="heroTag2" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);"></div>
