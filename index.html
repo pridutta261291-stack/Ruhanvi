@@ -320,7 +320,42 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   <!-- Floating crystal orb right side -->
   <div class="hero-visual" style="position:relative;z-index:2;">
     <div class="orb" id="heroOrb" style="background:radial-gradient(circle at 35% 30%,rgba(255,255,255,0.2),rgba(212,84,122,0.35) 45%,rgba(139,58,90,0.55));box-shadow:0 0 80px rgba(212,84,122,0.35),inset 0 0 40px rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);" >
-      <span id="heroEmoji"></span>
+      <span id="heroEmoji" style="display:none;"></span>
+      <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Full moon base -->
+        <circle cx="80" cy="80" r="72" fill="#FFF8DC" opacity="0.95"/>
+        <circle cx="80" cy="80" r="72" fill="none" stroke="#F5DEB3" stroke-width="1.5" opacity="0.6"/>
+        <!-- Soft glow ring -->
+        <circle cx="80" cy="80" r="72" fill="radial" opacity="0.3"/>
+        <!-- Mare / dark patches - authentic lunar maria -->
+        <!-- Mare Imbrium (top left) -->
+        <ellipse cx="58" cy="52" rx="20" ry="16" fill="#C8B89A" opacity="0.45" transform="rotate(-15 58 52)"/>
+        <!-- Mare Serenitatis (top center-right) -->
+        <ellipse cx="92" cy="55" rx="13" ry="11" fill="#CBBB9E" opacity="0.38" transform="rotate(10 92 55)"/>
+        <!-- Mare Tranquillitatis (center right) -->
+        <ellipse cx="98" cy="78" rx="16" ry="12" fill="#C4B494" opacity="0.42" transform="rotate(20 98 78)"/>
+        <!-- Mare Crisium (right edge) -->
+        <ellipse cx="112" cy="60" rx="8" ry="7" fill="#C2B290" opacity="0.50" transform="rotate(5 112 60)"/>
+        <!-- Mare Nubium (bottom center) -->
+        <ellipse cx="75" cy="105" rx="14" ry="10" fill="#CDB99F" opacity="0.38" transform="rotate(-10 75 105)"/>
+        <!-- Mare Fecunditatis (bottom right) -->
+        <ellipse cx="100" cy="100" rx="11" ry="9" fill="#C8B49A" opacity="0.40" transform="rotate(15 100 100)"/>
+        <!-- Oceanus Procellarum (left large) -->
+        <ellipse cx="52" cy="80" rx="18" ry="24" fill="#C6B696" opacity="0.32" transform="rotate(5 52 80)"/>
+        <!-- Craters -->
+        <circle cx="68" cy="38" r="5" fill="none" stroke="#B8A882" stroke-width="1" opacity="0.6"/>
+        <circle cx="68" cy="38" r="2" fill="#C8B890" opacity="0.4"/>
+        <circle cx="110" cy="85" r="4" fill="none" stroke="#B5A47E" stroke-width="1" opacity="0.55"/>
+        <circle cx="45" cy="100" r="3.5" fill="none" stroke="#BAA884" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="45" cy="100" r="1.5" fill="#C2B088" opacity="0.35"/>
+        <circle cx="90" cy="120" r="3" fill="none" stroke="#B8A880" stroke-width="0.8" opacity="0.5"/>
+        <circle cx="55" cy="65" r="2.5" fill="none" stroke="#BCA886" stroke-width="0.7" opacity="0.45"/>
+        <circle cx="120" cy="70" r="2" fill="none" stroke="#B8A47C" stroke-width="0.7" opacity="0.5"/>
+        <circle cx="72" cy="115" r="2" fill="none" stroke="#BAA880" stroke-width="0.7" opacity="0.4"/>
+        <circle cx="35" cy="72" r="3" fill="none" stroke="#B8A47E" stroke-width="0.8" opacity="0.45"/>
+        <!-- Highlight (light reflection top-left) -->
+        <ellipse cx="55" cy="42" rx="18" ry="12" fill="white" opacity="0.12" transform="rotate(-25 55 42)"/>
+      </svg>
       <div class="ftag ft1" id="heroTag1" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);"></div>
       <div class="ftag ft2" id="heroTag2" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);"></div>
       <div class="ftag ft3" id="heroTag3" style="background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);"></div>
@@ -731,7 +766,7 @@ var DEF_CONTENT={
   heroHeadingItalic:'sacred path',
   heroSub:'Browse freely. Trust your instincts. And if something in you is not sure — a short conversation before you choose can change everything you pick.',
   heroCta1:'Book a Reading ✦',heroCta2:'Explore Crystals ✦',
-  heroEmoji:'&#128142;',heroTag1:'&#10022; Moonlight cleansed',heroTag2:'&#10022; Energetically prescribed',heroTag3:'&#10022; Ships Worldwide',
+  heroEmoji:'🌙',heroTag1:'&#10022; Moonlight cleansed',heroTag2:'&#10022; Energetically prescribed',heroTag3:'&#10022; Ships Worldwide',
   marquee:'Red Jasper,Garnet,Labradorite,Energy Reading,Amethyst,Birth Chart,Citrine,Tiger Eye,Protection Set,Abundance Set,7 Chakra,Pyrite,Black Tourmaline,Rose Quartz',
   servLabel:'Work with me',servTitle:'The reading that actually tells you the truth',
   servSub:'I do not do general. I read the specific energy map you were born with and I tell you what I see — including the things you have been circling around but have not yet asked.',
@@ -837,6 +872,7 @@ C.servTitle=DEF_CONTENT.servTitle;
 C.servSub=DEF_CONTENT.servSub;
 C.heroCta1=DEF_CONTENT.heroCta1;
 C.heroCta2=DEF_CONTENT.heroCta2;
+C.heroEmoji=DEF_CONTENT.heroEmoji;
 var cons=JSON.parse(localStorage.getItem('rv_cons')||'null')||JSON.parse(JSON.stringify(DEF_CONS));
 var steps=JSON.parse(localStorage.getItem('rv_steps')||'null')||JSON.parse(JSON.stringify(DEF_STEPS));
 var reviews=JSON.parse(localStorage.getItem('rv_reviews')||'null')||JSON.parse(JSON.stringify(DEF_REVIEWS));
