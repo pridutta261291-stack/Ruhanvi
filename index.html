@@ -27,6 +27,7 @@
 
 /* ── TABLET (≤900px) ── */
 @media(max-width:900px){
+#navHamburger{display:flex !important;}
 nav{padding:0 4%;}
 .nav-links{display:none;}
 .hero{grid-template-columns:1fr;padding-top:96px;gap:32px;}
@@ -50,6 +51,7 @@ section{padding:60px 5%;}
 
 /* ── MOBILE (≤600px) ── */
 @media(max-width:600px){
+.admin-btn{display:none;}
 nav{height:60px;padding:0 4%;}
 .logo{font-size:20px;}
 .hero{padding:80px 4% 40px;}
@@ -120,9 +122,6 @@ footer{padding:36px 4%;font-size:12px;}
 <li><a href="#story">Our Story</a></li>
 <li><a href="#contact">Connect</a></li>
 </ul>
-<button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menu">
-<span></span><span></span><span></span>
-</button>
 <div class="nav-right">
 <div style="position:relative;display:inline-block;">
 <select id="currencySelect" onchange="setCurrency(this.value)" style="appearance:none;-webkit-appearance:none;background:var(--ivory);border:1px solid var(--border);color:var(--text);font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.06em;padding:6px 28px 6px 10px;cursor:pointer;outline:none;border-radius:4px;">
@@ -133,6 +132,7 @@ footer{padding:36px 4%;font-size:12px;}
 </div>
 <button class="admin-btn" onclick="openAdmin()">&#9881; Manage</button>
 <button class="nav-cart" onclick="toggleCart()">&#128717;<span class="cart-count" id="cc">0</span></button>
+<button id="navHamburger" onclick="toggleMobileNav()" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:8px;font-size:22px;color:var(--text);line-height:1;">&#9776;</button>
 </div>
 </nav>
 <div class="mobile-nav-overlay" id="mobileNav">
