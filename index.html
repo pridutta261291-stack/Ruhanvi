@@ -450,6 +450,8 @@
 <script>
 
 
+
+
 // Resolve image references from hidden cache
 function resolveImg(src){
   if(!src||!src.startsWith('__img_'))return src;
@@ -1663,18 +1665,42 @@ b.innerHTML='<h3 class="ast">Settings</h3>'+
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2400);}
 
 var ZODIAC = [
-{sign:'Aries',dates:'Mar 21 – Apr 19',emoji:'♈',element:'Fire',stones:['Red Jasper','Carnelian','Clear Quartz','Garnet'],why:['Boosts your natural courage and drive','Ignites your creative fire','Amplifies your powerful intentions','Fuels your passion and energy']},
-{sign:'Taurus',dates:'Apr 20 – May 20',emoji:'♉',element:'Earth',stones:['Rosy Quartz','Pyrite','Labradorite','Selenite'],why:['Opens your heart to give and receive love','Attracts the wealth you deserve','Deepens your natural intuition','Brings the calm and peace you crave']},
-{sign:'Gemini',dates:'May 21 – Jun 20',emoji:'♊',element:'Air',stones:['Clear Quartz','Turquoise','Tiger Eye','Citrine'],why:['Amplifies your brilliant quick mind','Enhances your natural communication','Sharpens your focus and willpower','Keeps your optimism and joy high']},
-{sign:'Cancer',dates:'Jun 21 – Jul 22',emoji:'♋',element:'Water',stones:['Mother of Pearl','Rosy Quartz','Selenite','Black Tourmaline'],why:['Nurtures your deeply empathic soul','Heals and opens your generous heart','Purifies your sensitive energy field','Protects your emotional boundaries']},
-{sign:'Leo',dates:'Jul 23 – Aug 22',emoji:'♌',element:'Fire',stones:['Citrine','Garnet','Pyrite','Tiger Eye'],why:['Amplifies your natural confidence','Fuels your magnificent life force','Attracts the success you deserve','Sharpens your regal willpower']},
-{sign:'Virgo',dates:'Aug 23 – Sep 22',emoji:'♍',element:'Earth',stones:['Labradorite','Clear Quartz','Selenite','Carnelian'],why:['Quiets your analytical overthinking mind','Brings crystalline mental clarity','Purifies and declutters your energy','Sparks your creative problem-solving']},
-{sign:'Libra',dates:'Sep 23 – Oct 22',emoji:'♎',element:'Air',stones:['Rosy Quartz','Turquoise','Labradorite','7 Chakra'],why:['Harmonises all your relationships','Helps you speak your truth with grace','Strengthens your refined intuition','Balances all aspects of your being']},
-{sign:'Scorpio',dates:'Oct 23 – Nov 21',emoji:'♏',element:'Water',stones:['Black Tourmaline','Black Obsidian','Amethyst','Garnet'],why:['Protects your intense energy field','Supports your deep shadow work','Channels your powerful intuition','Transforms your depth into pure passion']},
-{sign:'Sagittarius',dates:'Nov 22 – Dec 21',emoji:'♐',element:'Fire',stones:['Labradorite','Citrine','Turquoise','Clear Quartz'],why:['Expands your already vast wisdom','Keeps your optimism and luck flowing','Enhances your love of truth','Amplifies your adventurous spirit']},
-{sign:'Capricorn',dates:'Dec 22 – Jan 19',emoji:'♑',element:'Earth',stones:['Pyrite','Black Tourmaline','Dhan Yoga','Tiger Eye'],why:['Attracts the success you work so hard for','Grounds and protects your ambitions','Multiplies your prosperity energy','Sharpens your determined willpower']},
-{sign:'Aquarius',dates:'Jan 20 – Feb 18',emoji:'♒',element:'Air',stones:['Labradorite','Clear Quartz','Amethyst','Turquoise'],why:['Enhances your visionary thinking','Amplifies your revolutionary ideas','Deepens your spiritual awareness','Connects you to your humanitarian heart']},
-{sign:'Pisces',dates:'Feb 19 – Mar 20',emoji:'♓',element:'Water',stones:['Amethyst','Mother of Pearl','Selenite','Rosy Quartz'],why:['Protects your deeply empathic spirit','Nurtures your gentle sensitive soul','Keeps your aura clear and pure','Reminds you of your own beautiful worth']}
+{sign:'Aries',dates:'Mar 21 – Apr 19',emoji:'♈',element:'Fire',
+stones:['Red Jasper','Carnelian','Garnet','Pyrite'],
+why:['Boosts your courage and unstoppable drive','Ignites your creative fire and vitality','Fuels your passion and manifestation energy','Attracts the success your ambition deserves']},
+{sign:'Taurus',dates:'Apr 20 – May 20',emoji:'♉',element:'Earth',
+stones:['Rosy Quartz','Pyrite','Green Aventurine','Jade'],
+why:['Opens your heart to give and receive love deeply','Attracts the abundance you deserve','Draws luck and new opportunities your way','Brings lasting peace and grounded prosperity']},
+{sign:'Gemini',dates:'May 21 – Jun 20',emoji:'♊',element:'Air',
+stones:['Blue Apatite','Turquoise','Clear Quartz','Fluorite'],
+why:['Sharpens your brilliant quick mind','Enhances your natural gift for communication','Amplifies clarity and powerful intentions','Brings focus to your expansive curiosity']},
+{sign:'Cancer',dates:'Jun 21 – Jul 22',emoji:'♋',element:'Water',
+stones:['Mother of Pearl','Rosy Quartz','Selenite','Moonstone'],
+why:['Nurtures your deeply empathic soul','Heals and opens your generous heart','Purifies your sensitive energy field','Aligns you with your natural lunar intuition']},
+{sign:'Leo',dates:'Jul 23 – Aug 22',emoji:'♌',element:'Fire',
+stones:['Citrine','Garnet','Pyrite','Tiger Eye'],
+why:['Amplifies your natural radiance and confidence','Fuels your magnificent life force','Attracts the success and recognition you deserve','Sharpens your regal willpower and courage']},
+{sign:'Virgo',dates:'Aug 23 – Sep 22',emoji:'♍',element:'Earth',
+stones:['Labradorite','Clear Quartz','Fluorite','Amethyst'],
+why:['Quiets your analytical overthinking mind','Brings crystalline mental clarity','Supports precision and focused thinking','Deepens your spiritual discernment']},
+{sign:'Libra',dates:'Sep 23 – Oct 22',emoji:'♎',element:'Air',
+stones:['Rosy Quartz','Lapis Lazuli','Moonstone','7 Chakra'],
+why:['Harmonises all your relationships beautifully','Helps you speak your truth with grace','Enhances your refined intuition','Balances all aspects of your being']},
+{sign:'Scorpio',dates:'Oct 23 – Nov 21',emoji:'♏',element:'Water',
+stones:['Black Tourmaline','Black Obsidian','Amethyst','Garnet'],
+why:['Protects your intense and powerful energy field','Supports your deep transformative shadow work','Channels your powerful intuition','Turns your depth into pure unstoppable passion']},
+{sign:'Sagittarius',dates:'Nov 22 – Dec 21',emoji:'♐',element:'Fire',
+stones:['Labradorite','Citrine','Turquoise','Blue Apatite'],
+why:['Expands your already vast wisdom and vision','Keeps your optimism and good fortune flowing','Opens your mind to higher philosophical truth','Fuels your hunger for knowledge and adventure']},
+{sign:'Capricorn',dates:'Dec 22 – Jan 19',emoji:'♑',element:'Earth',
+stones:['Pyrite','Black Tourmaline','Tiger Eye','Green Aventurine'],
+why:['Attracts the success you work so relentlessly for','Grounds and protects your long-term ambitions','Sharpens your focused and determined willpower','Opens doors to luck and new opportunities']},
+{sign:'Aquarius',dates:'Jan 20 – Feb 18',emoji:'♒',element:'Air',
+stones:['Labradorite','Amethyst','Fluorite','Blue Apatite'],
+why:['Enhances your visionary and revolutionary thinking','Deepens your spiritual awareness and intuition','Brings clarity to your brilliant reforming mind','Connects you to your humanitarian purpose']},
+{sign:'Pisces',dates:'Feb 19 – Mar 20',emoji:'♓',element:'Water',
+stones:['Amethyst','Mother of Pearl','Selenite','Rosy Quartz'],
+why:['Protects your deeply empathic and sensitive spirit','Nurtures your gentle and compassionate soul','Keeps your aura luminously clear and pure','Reminds you of your own profound inner worth']}
 ];
 
 var ELEMENT_COLOR = {Fire:'#c04040',Earth:'#4A7C59',Air:'#4A6B8B',Water:'#4A5A8B'};
@@ -1708,21 +1734,18 @@ detail.innerHTML =
 '<h3 style="font-family:Playfair Display,serif;font-size:28px;color:white;font-weight:400;margin-bottom:4px;">'+z.sign+'</h3>'+
 '<p style="color:rgba(255,255,255,0.55);font-size:13px;">'+z.dates+' &middot; '+z.element+' sign</p>'+
 '</div>'+
-'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">'+
 matchedProds.map(function(m){
 var effP = m.prod ? ((m.prod.discount&&m.prod.discount>0)?Math.round(m.prod.price*(1-m.prod.discount/100)):m.prod.price) : null;
-return '<div style="background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;">'+
-'<div style="height:90px;background:'+(m.prod?(CATBG[m.prod.cat]||'#FCE8F0'):'rgba(255,255,255,0.05)')+';display:flex;align-items:center;justify-content:center;font-size:36px;">'+(m.prod?(m.prod.img?'<img src="'+m.prod.img+'" style="width:100%;height:100%;object-fit:cover;">':m.prod.emoji):'💎')+'</div>'+
-'<div style="padding:12px;">'+
-'<div style="font-family:Playfair Display,serif;font-size:15px;color:white;margin-bottom:4px;">'+m.name+'</div>'+
-'<div style="font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:10px;">'+m.why+'</div>'+
+return '<div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;">'+
+'<div style="font-family:Playfair Display,serif;font-size:16px;color:white;margin-bottom:6px;">'+m.name+'</div>'+
+'<div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:12px;">'+m.why+'</div>'+
 (m.prod ?
-'<div style="display:flex;align-items:center;justify-content:space-between;">'+
-'<span style="font-size:13px;font-weight:500;color:var(--gold-light);">'+fmtPrice(effP)+'</span>'+
-'<button onclick="addCart('+m.prod.id+');scrollToShop()" style="background:var(--gold-light);color:var(--deep);border:none;padding:6px 12px;border-radius:6px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;font-family:Jost,sans-serif;font-weight:500;">Add to Cart</button>'+
+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">'+
+'<span style="font-size:14px;font-weight:500;color:var(--gold-light);">'+fmtPrice(effP)+'</span>'+
+'<button onclick="addCart('+m.prod.id+')" style="background:var(--gold-light);color:var(--deep);border:none;padding:7px 14px;border-radius:6px;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;font-family:Jost,sans-serif;font-weight:500;">Add to Cart</button>'+
 '</div>'
-: '<p style="font-size:11px;color:rgba(255,255,255,0.4);font-style:italic;">Coming soon to Ruhanvi</p>')+
-'</div>'+
+: '<p style="font-size:11px;color:rgba(255,255,255,0.4);font-style:italic;">Coming soon</p>')+
 '</div>';
 }).join('')+
 '</div>'+
@@ -1873,6 +1896,8 @@ animate();
 renderSite();
 renderZodiac();
 initCrystalCanvas();
+
+
 
 
 
