@@ -106,7 +106,11 @@ footer{padding:36px 4%;font-size:12px;}
 }
 @media(max-width:600px){
 .cinp,.ctxt,.finp,.ftxt,.afi,.afsel,.afta{font-size:16px !important;}
-}</style>
+}
+.qadd:active,.qadd:focus{transform:scale(0.96);opacity:0.85;}
+.qplus:active,.qminus:active{transform:scale(0.92);}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+</style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Store","name":"Ruhanvi","description":"Crystal healing, planetary readings and soulful guidance. Ships worldwide from India.","url":"https://ruhanvi.com","telephone":"+919051266338","address":{"@type":"PostalAddress","addressCountry":"IN"},"priceRange":"₹₹","openingHours":"Mo-Su 09:00-21:00","sameAs":[]}
 </script>
@@ -1049,57 +1053,38 @@ document.getElementById('prodOv').style.display='none';
 document.body.style.overflow='';
 }
 function removeCart(id){
-if(!cart[id]||cart[id]<=0) return;
+if(!cart[id]||cart[id]<=0)return;
 cart[id]--;
-if(cart[id]===0) delete cart[id];
-updCount(); updateOneCartBtn(id); renderCart();
+if(cart[id]===0)delete cart[id];
+updCount();_syncBtn(id);renderCart();
 }
 function addCart(id){
-var p=prods.find(function(x){return x.id===id;}); if(!p) return;
-cart[id]=(cart[id]||0)+1; updCount();
-updateOneCartBtn(id);
-toast('Added: '+p.name);
+var p=prods.find(function(x){return x.id===id;});if(!p)return;
+cart[id]=(cart[id]||0)+1;
+updCount();_syncBtn(id);
+requestAnimationFrame(function(){toast('Added: '+p.name);});
 }
-function updateOneCartBtn(id){
+function _syncBtn(id){
 var qty=cart[id]||0;
 var ab=document.getElementById('ab'+id);
 var qp=document.getElementById('qplus'+id);
 var qm=document.getElementById('qminus'+id);
 var qn=document.getElementById('qnum'+id);
-if(!ab) return;
+if(!ab)return;
 if(qty>0){
-ab.style.display='none';
-if(qp) qp.style.display='flex';
-if(qm) qm.style.display='flex';
-if(qn){qn.style.display='flex';qn.textContent=qty;}
-} else {
-ab.style.display='flex'; ab.style.borderRadius='6px';
-if(qp) qp.style.display='none';
-if(qm) qm.style.display='none';
-if(qn) qn.style.display='none';
+  ab.style.display='none';
+  if(qp)qp.style.display='flex';
+  if(qm)qm.style.display='flex';
+  if(qn){qn.style.display='flex';qn.textContent=qty;}
+}else{
+  ab.style.display='flex';ab.style.borderRadius='6px';
+  if(qp)qp.style.display='none';
+  if(qm)qm.style.display='none';
+  if(qn)qn.style.display='none';
 }
 }
-function updateCartButtons(){
-prods.forEach(function(p){
-var qty=cart[p.id]||0;
-var ab=document.getElementById('ab'+p.id);
-var qp=document.getElementById('qplus'+p.id);
-var qm=document.getElementById('qminus'+p.id);
-var qn=document.getElementById('qnum'+p.id);
-if(!ab) return;
-if(qty>0){
-ab.style.display='none';
-if(qp) qp.style.display='flex';
-if(qm) qm.style.display='flex';
-if(qn){qn.style.display='flex';qn.textContent=qty;}
-} else {
-ab.style.display='flex'; ab.style.borderRadius='6px';
-if(qp) qp.style.display='none';
-if(qm) qm.style.display='none';
-if(qn) qn.style.display='none';
-}
-});
-}
+function updateOneCartBtn(id){_syncBtn(id);}
+function updateCartButtons(){prods.forEach(function(p){_syncBtn(p.id);});}
 function updCount(){
 var total=Object.values(cart).reduce(function(a,b){return a+b;},0)+
 Object.values(consCart).reduce(function(a,b){return a+b;},0);
