@@ -608,14 +608,17 @@ document.body.style.overflow='';
 
 
 // Resolve image references from hidden cache
+var _imgCache={};
+function _buildImgCache(){
+  document.querySelectorAll('#imgCache img').forEach(function(el){
+    _imgCache[el.id]=el.getAttribute('src');
+  });
+}
 function resolveImg(src){
   if(!src)return '';
   if(!src.startsWith('__img_'))return src;
   var id=src.replace('__img_','').replace('__','');
-  var el=document.getElementById('pimg_'+id);
-  if(!el)return '';
-  var s=el.getAttribute('src');
-  return s||'';
+  return _imgCache['pimg_'+id]||'';
 }
 
 
@@ -1049,13 +1052,32 @@ function removeCart(id){
 if(!cart[id]||cart[id]<=0) return;
 cart[id]--;
 if(cart[id]===0) delete cart[id];
-updCount(); updateCartButtons(); renderCart();
+updCount(); updateOneCartBtn(id); renderCart();
 }
 function addCart(id){
 var p=prods.find(function(x){return x.id===id;}); if(!p) return;
 cart[id]=(cart[id]||0)+1; updCount();
-updateCartButtons();
+updateOneCartBtn(id);
 toast('Added: '+p.name);
+}
+function updateOneCartBtn(id){
+var qty=cart[id]||0;
+var ab=document.getElementById('ab'+id);
+var qp=document.getElementById('qplus'+id);
+var qm=document.getElementById('qminus'+id);
+var qn=document.getElementById('qnum'+id);
+if(!ab) return;
+if(qty>0){
+ab.style.display='none';
+if(qp) qp.style.display='flex';
+if(qm) qm.style.display='flex';
+if(qn){qn.style.display='flex';qn.textContent=qty;}
+} else {
+ab.style.display='flex'; ab.style.borderRadius='6px';
+if(qp) qp.style.display='none';
+if(qm) qm.style.display='none';
+if(qn) qn.style.display='none';
+}
 }
 function updateCartButtons(){
 prods.forEach(function(p){
@@ -2059,6 +2081,7 @@ requestAnimationFrame(animate);
 animate();
 }
 
+_buildImgCache();
 renderSite();
 renderZodiac();
 initCrystalCanvas();
