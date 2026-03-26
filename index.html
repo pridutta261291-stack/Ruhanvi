@@ -887,31 +887,10 @@ function fmtDate(d){
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
 }
-// Always use latest DEF_CONTENT as base, overlay only user-saved overrides
-localStorage.removeItem('rv_content');
-var _saved=null;
-var C=Object.assign({},DEF_CONTENT);
-// Force specific fields to always reflect latest file defaults (never cached)
-C.storyTitle=DEF_CONTENT.storyTitle;
-C.storyP1=DEF_CONTENT.storyP1;
-C.storyP2=DEF_CONTENT.storyP2;
-C.storyP3=DEF_CONTENT.storyP3;
-C.storyQuote=DEF_CONTENT.storyQuote;
-C.storyQuoteAuthor=DEF_CONTENT.storyQuoteAuthor;
-C.storyCta=DEF_CONTENT.storyCta;
-C.shopTitle=DEF_CONTENT.shopTitle;
-C.shopLabel=DEF_CONTENT.shopLabel;
-C.heroSub=DEF_CONTENT.heroSub;
-C.heroHeading=DEF_CONTENT.heroHeading;
-C.heroHeadingItalic=DEF_CONTENT.heroHeadingItalic;
-C.heroEyebrow=DEF_CONTENT.heroEyebrow;
-C.siteTagline=DEF_CONTENT.siteTagline;
-C.footerTagline=DEF_CONTENT.footerTagline;
-C.servTitle=DEF_CONTENT.servTitle;
-C.servSub=DEF_CONTENT.servSub;
-C.heroCta1=DEF_CONTENT.heroCta1;
-C.heroCta2=DEF_CONTENT.heroCta2;
-C.heroEmoji=DEF_CONTENT.heroEmoji;
+// Load saved admin edits, but force-lock specific fields to file defaults
+var _saved=JSON.parse(localStorage.getItem('rv_content')||'null');
+var C=Object.assign({},DEF_CONTENT,_saved||{});
+// These fields always use the latest file values (never overridden by cache)
 C.whatsapp=DEF_CONTENT.whatsapp;
 C.footerCopy=DEF_CONTENT.footerCopy;
 C.ctResponse=DEF_CONTENT.ctResponse;
