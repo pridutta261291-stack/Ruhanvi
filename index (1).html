@@ -622,7 +622,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
       <div class="cd"><span class="cd-i">&#128205;</span><div><p class="cd-l">Based in</p><p class="cd-v" id="ctLocation"></p></div></div>
       <div class="cd"><span class="cd-i">&#9201;</span><div><p class="cd-l">Response time</p><p class="cd-v" id="ctResponse"></p></div></div>
       <div class="cd"><span class="cd-i">&#127760;</span><div><p class="cd-l">International</p><p class="cd-v" id="ctIntl"></p></div></div>
-      <a class="wa-btn" id="ctWaBtn" target="_blank"><span>&#128172;</span><span id="ctWaText"></span></a>
+      <a class="wa-btn" id="ctWaBtn"><span>&#9993;</span><span id="ctWaText"></span></a>
     </div>
     <div>
       <p class="flbl" id="ctFormTitle"></p>
@@ -722,7 +722,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
         </div>
       </div>
       <button id="ssWhatsappBtn" class="cwa" style="background:var(--wa);border:none;cursor:pointer;margin-bottom:0;width:100%;" onclick="sendOrder(event)">
-        Send Payment Screenshot on WhatsApp
+        Send Order via WhatsApp
       </button>
     </div>
   </div>
@@ -788,12 +788,12 @@ var DEF_CONTENT={
   ctLabel:'Reach out',ctTitle:"You do not need the right words. Just tell me what is happening.",
   ctSub:'Most people who write to me do not know exactly what they need. That is fine. Tell me what is going on — in your work, your relationships, your inner life. I will tell you what I see and what I think will help.',
   ctLocation:'Based in India · Ships Worldwide',
-  ctResponse:'I respond within 2 hours · +91 87773 07764',
-  ctIntl:'Readings via WhatsApp · Video · Email · Worldwide',
-  ctWaText:'Message me on WhatsApp',
-  ctFormTitle:'Tell me what is happening',ctFormBtn:'Send via WhatsApp',
+  ctResponse:'I respond within 2 hours · hello@ruhanvi.com',
+  ctIntl:'Readings via Email · Video · Call · Worldwide',
+  ctWaText:'Email Me',
+  ctFormTitle:'Tell me what is happening',ctFormBtn:'Send via Email',
   footerTagline:'Soulful Guidance. Sacred Healing.',
-  footerCopy:'© 2025 Ruhanvi · India · WhatsApp: +91 87773 07764',
+  footerCopy:'© 2025 Ruhanvi · India · Email: hello@ruhanvi.com',
   footerNote:'Made with intention &#127801;',
   whatsapp:'918777307764'
 };
@@ -905,6 +905,9 @@ C.heroEmoji=DEF_CONTENT.heroEmoji;
 C.whatsapp=DEF_CONTENT.whatsapp;
 C.footerCopy=DEF_CONTENT.footerCopy;
 C.ctResponse=DEF_CONTENT.ctResponse;
+C.ctIntl=DEF_CONTENT.ctIntl;
+C.ctFormBtn=DEF_CONTENT.ctFormBtn;
+C.ctWaText=DEF_CONTENT.ctWaText;
 var cons=JSON.parse(localStorage.getItem('rv_cons')||'null')||JSON.parse(JSON.stringify(DEF_CONS));
 var steps=JSON.parse(localStorage.getItem('rv_steps')||'null')||JSON.parse(JSON.stringify(DEF_STEPS));
 var reviews=JSON.parse(localStorage.getItem('rv_reviews')||'null')||JSON.parse(JSON.stringify(DEF_REVIEWS));
@@ -933,9 +936,8 @@ function renderSite(){
   setText('heroCta2',C.heroCta2);
   var emoEl=document.getElementById('heroEmoji'); if(emoEl) emoEl.innerHTML=C.heroEmoji;
   setText('heroTag1',C.heroTag1); setText('heroTag2',C.heroTag2); setText('heroTag3',C.heroTag3);
-  var waUrl='https://wa.me/'+C.whatsapp+'?text=Hi%20'+encodeURIComponent(C.siteName)+'!%20I%20would%20like%20to%20book%20a%20consultation%20%F0%9F%99%8F';
-  var c1=document.getElementById('heroCta1'); if(c1) c1.href=waUrl;
-  var sc=document.getElementById('storyCta'); if(sc) sc.href=waUrl;
+  var c1=document.getElementById('heroCta1'); if(c1) c1.href='mailto:hello@ruhanvi.com';
+  var sc=document.getElementById('storyCta'); if(sc) sc.href='mailto:hello@ruhanvi.com';
   var items=C.marquee.split(',');
   var inner=items.map(function(i){return '<span>'+i.trim()+'</span><span class="dot">&#10022;</span>';}).join('');
   var mq=document.getElementById('marqueeInner'); if(mq) mq.innerHTML=inner+inner;
@@ -951,7 +953,7 @@ function renderSite(){
   setText('ctLabel',C.ctLabel); setText('ctTitle',C.ctTitle); setText('ctSub',C.ctSub);
   setText('ctLocation',C.ctLocation); setText('ctResponse',C.ctResponse); setText('ctIntl',C.ctIntl);
   setText('ctWaText',C.ctWaText);
-  var wb=document.getElementById('ctWaBtn'); if(wb) wb.href='https://wa.me/'+C.whatsapp+'?text=Hi%20'+encodeURIComponent(C.siteName)+'!%20I%20would%20love%20some%20guidance.';
+  var wb=document.getElementById('ctWaBtn'); if(wb){wb.href='mailto:hello@ruhanvi.com';wb.removeAttribute('target');}
   setText('ctFormTitle',C.ctFormTitle); setText('ctFormBtn',C.ctFormBtn);
   var fl=document.getElementById('footerLogo'); if(fl) fl.innerHTML=C.siteName+'<span>.</span>';
   setText('footerTagline',C.footerTagline); setText('footerCopy',C.footerCopy); setText('footerNote',C.footerNote);
@@ -984,7 +986,7 @@ function renderServices(){
           '<button id="cadd'+c.id+'" onclick="window._cc(this)" data-cid="'+c.id+'" data-cd="1" style="display:'+(inCart>0?'none':'flex')+';height:34px;padding:0 16px;border:none;background:rgba(255,255,255,0.12);color:white;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:Jost,sans-serif;align-items:center;justify-content:center;">Add to Cart</button>'+
           '<button id="cqplus'+c.id+'" onclick="window._cc(this)" data-cid="'+c.id+'" data-cd="1" style="display:'+(inCart>0?'flex':'none')+';width:34px;height:34px;border:none;background:rgba(255,255,255,0.12);color:white;font-size:20px;cursor:pointer;border-left:1.5px solid rgba(255,255,255,0.2);align-items:center;justify-content:center;">&#43;</button>'+
         '</div>'+
-        '<a href="https://wa.me/'+C.whatsapp+'?text=Hi%20'+encodeURIComponent(C.siteName)+'!%20I%20would%20like%20to%20book%20'+encodeURIComponent(c.name)+'.&nbsp;" class="sv-book" target="_blank">Book on WhatsApp &rarr;</a>'+
+        '<a href="mailto:hello@ruhanvi.com" class="sv-book">Email to Book &rarr;</a>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -1507,7 +1509,7 @@ function placeOrder(){
     +'[Sending payment screenshot now]';
   window.open('https://wa.me/'+C.whatsapp+'?text='+msg,'_blank');
   cart={}; consCart={}; updCount(); renderCart(); updateCartButtons(); renderServices();
-  toast('Order placed! Please send screenshot on WhatsApp');
+  toast('Order placed! Please send payment screenshot on WhatsApp');
 }
 
 function sendForm(){
@@ -1535,7 +1537,7 @@ function sendForm(){
     +'Place of Birth: '+pob+'\n'
     +'Gender: '+gen+'\n\n'
     +'Message: '+m;
-  window.open('https://wa.me/'+C.whatsapp+'?text='+encodeURIComponent(msg),'_blank');
+  window.location.href='mailto:hello@ruhanvi.com?subject=Reading%20Request&body='+encodeURIComponent(msg);
 }
 
 function openAdmin(){
