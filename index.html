@@ -11,14 +11,16 @@
 :root{--ivory:#FDF5F8;--warm:#FAE8F0;--gold:#D4547A;--gold-light:#F2B8CC;--gold-pale:#FCE8F0;--deep:#8B3A5A;--brown:#A0476E;--text:#3D1A2B;--text-mid:#9C6478;--text-muted:#C49BAD;--border:#F0D5E0;--white:#FFFFFF;--wa:#25D366;}
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
 body{font-family:'Jost',sans-serif;background:var(--ivory);color:var(--text);font-size:15px;line-height:1.6;overflow-x:hidden;}
-nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 6%;height:72px;background:rgba(253,245,248,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 3% 0 6%;height:72px;background:rgba(253,245,248,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
 .logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;color:var(--text);text-decoration:none;letter-spacing:0.04em;}
 .logo span{color:var(--gold);}
 .nav-links{display:flex;gap:36px;list-style:none;}
 .nav-links a{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mid);text-decoration:none;transition:color 0.2s;}
 .nav-links a:hover{color:var(--text);}
-.nav-right{display:flex;align-items:center;gap:12px;}
-.admin-btn{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;}
+.nav-logo-wrap{display:flex;flex-direction:column;line-height:1.1;}
+.nav-tagline{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-mid);font-family:'Jost',sans-serif;font-weight:300;margin-top:3px;}
+.nav-right{display:flex;align-items:center;gap:8px;margin-right:20px;}
+.admin-btn{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);background:none;border:1px solid var(--border);padding:6px 14px;cursor:pointer;font-family:'Jost',sans-serif;transition:all 0.2s;white-space:nowrap;}
 .admin-btn:hover{border-color:var(--gold);color:var(--gold);}
 .nav-cart{position:relative;background:none;border:none;cursor:pointer;font-size:20px;color:var(--text);padding:8px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
 .cart-count{position:absolute;top:0;right:0;background:var(--gold);color:white;font-size:9px;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
@@ -256,7 +258,12 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   #prodPanel{margin:0 !important;min-height:100vh;}
   #prodPanel > div > div:first-child > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
 
-  nav{padding:0 4%;}
+  nav{padding:0 3%;height:64px;}
+  .nav-logo-wrap .logo{font-size:20px;}
+  .nav-tagline{font-size:9px;letter-spacing:0.1em;}
+  nav .nav-right .currency-wrap{display:none;}
+  nav .admin-btn{font-size:11px;padding:5px 10px;}
+  nav .nav-cart{font-size:24px;}
   section{padding:48px 4%;}
   .hero{padding:88px 4% 48px;}
   .hero h1{font-size:32px;}
@@ -317,7 +324,11 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
 
 
 <nav>
-  <a href="#" class="logo" id="navLogo">Ruhanvi<span>.</span></a><span style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-mid);font-family:'Jost',sans-serif;font-weight:400;margin-left:10px;vertical-align:middle;">Inspired by mother</span>
+  <!-- Logo + tagline stacked -->
+  <div class="nav-logo-wrap">
+    <a href="#" class="logo" id="navLogo">Ruhanvi<span>.</span></a>
+    <div class="nav-tagline">Inspired by mother</div>
+  </div>
   <ul class="nav-links">
     <li><a href="#services">Consult</a></li>
     <li><a href="#shop">Shop</a></li>
@@ -327,15 +338,17 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
     <li><a href="#contact">Connect</a></li>
   </ul>
   <div class="nav-right">
-      <div style="position:relative;display:inline-block;">
-        <select id="currencySelect" onchange="setCurrency(this.value)" style="appearance:none;-webkit-appearance:none;background:var(--ivory);border:1px solid var(--border);color:var(--text);font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.06em;padding:6px 28px 6px 10px;cursor:pointer;outline:none;border-radius:4px;">
-          <option value="INR">&#8377; INR</option>
-          <option value="USD">$ USD</option>
-        </select>
-        <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:10px;color:var(--text-muted);">&#9660;</span>
-      </div>
-    <button class="admin-btn" onclick="openAdmin()">&#9881; Manage</button>
+    <div class="currency-wrap" style="position:relative;display:inline-block;">
+      <select id="currencySelect" onchange="setCurrency(this.value)" style="appearance:none;-webkit-appearance:none;background:var(--ivory);border:1px solid var(--border);color:var(--text);font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.06em;padding:6px 28px 6px 10px;cursor:pointer;outline:none;border-radius:4px;">
+        <option value="INR">&#8377; INR</option>
+        <option value="USD">$ USD</option>
+      </select>
+      <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:10px;color:var(--text-muted);">&#9660;</span>
+    </div>
+    <!-- Cart center on mobile -->
     <button class="nav-cart" onclick="toggleCart()">&#128717;<span class="cart-count" id="cc">0</span></button>
+    <!-- Manage far right -->
+    <button class="admin-btn" onclick="openAdmin()">&#9881; Manage</button>
   </div>
 </nav>
 
@@ -741,7 +754,11 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
 <!-- ADMIN -->
 <div class="adm-ov" id="admOv" onclick="if(event.target===this)closeAdmin()">
   <div class="adm-pn">
-    <div class="adm-hdr"><div><h2>Ruhanvi Admin</h2><small>Edit everything on your website</small></div><button class="adm-x" onclick="closeAdmin()">&times;</button></div>
+    <div class="adm-hdr"><div><h2>Ruhanvi Admin</h2><small>Edit everything on your website</small></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+    <button onclick="exportSettings()" style="font-size:10px;padding:5px 10px;background:var(--gold);color:white;border:none;cursor:pointer;border-radius:3px;font-family:'Jost',sans-serif;letter-spacing:0.05em;">&#128190; Save to File</button>
+    <button class="adm-x" onclick="closeAdmin()">&times;</button>
+    </div></div>
     <div id="admLogin">
       <div class="lgn">
         <div style="font-size:38px;margin-bottom:10px;">&#128272;</div>
@@ -819,12 +836,12 @@ var DEF_REVIEWS=[
   {stars:5,text:'I was sceptical. I booked because a friend insisted. She looked at my energy, told me what I was carrying, and gave me a citrine. Three weeks later I had three job interviews after eight months of nothing. It is still on my desk.',name:'Debjani R. — Pune'}
 ];
 var DEF_CONS=[
-  {id:'c1',icon:'&#127760;',name:'Your Planetary Blueprint',desc:'The moment you were born, the sky made a map of you. Your nature, your cycles, the chapters your life is built to move through, and the ones you keep resisting. This reading reads that map out loud.',price:1299,duration:'60 minutes'},
-  {id:'c2',icon:'&#128142;',name:'Crystal Prescription',desc:'I read your energy map, understand the exact chapter you are in, and prescribe the stone that aligns with what your system actually needs right now. Not what is trending. Not what worked for someone else. Yours.',price:1299,duration:'Includes crystals'},
-  {id:'c3',icon:'&#127769;',name:'The Year Ahead',desc:'Every year has its own flavour of difficulty and its own gifts. This reading tells you what the next 12 months are genuinely asking of you — in work, in love, in health, in the parts of life you do not talk about at dinner.',price:1299,duration:'45 minutes'},
-  {id:'c4',icon:'&#10084;&#65039;',name:'Relationship Reading',desc:'Some connections feel like recognition. Others feel like work that never ends. I read both energy maps — what they bring, what they trigger, what is possible between them. For the ones you cannot stop thinking about, and the ones you cannot understand.',price:1299,duration:'50 minutes'},
-  {id:'c5',icon:'&#128188;',name:'Career & Business Reading',desc:'The question is never just what to do. It is when. I read your energy cycles to tell you what you are built for, what you are fighting against in yourself, and whether this is the moment to move or the moment to wait.',price:1299,duration:'50 minutes'},
-  {id:'c6',icon:'&#10024;',name:'Full Reading + Crystal Set',desc:'A complete reading of your energy map followed by a crystal set chosen specifically for where you are in this chapter. Everything I know, applied to exactly where you are right now.',price:1299,duration:'Full session + crystals'},
+  {id:'c1',icon:'&#127760;',name:'Your Planetary Blueprint',desc:'The moment you were born, the sky made a map of you. Your nature, your cycles, the chapters your life is built to move through, and the ones you keep resisting. This reading reads that map out loud.',price:1299,duration:'50 minutes'},
+  {id:'c2',icon:'&#128142;',name:'Crystal Prescription',desc:'I read your energy map, understand the exact chapter you are in, and prescribe the stone that aligns with what your system actually needs right now. Not what is trending. Not what worked for someone else. Yours.',price:1299,duration:'50 minutes'},
+  {id:'c3',icon:'&#127769;',name:'The Year Ahead',desc:'Every year has its own flavour of difficulty and its own gifts. This reading tells you what the next 12 months are genuinely asking of you — in work, in love, in health, in the parts of life you do not talk about at dinner.',price:1888,duration:'60 minutes'},
+  {id:'c4',icon:'&#10084;&#65039;',name:'Relationship Reading',desc:'Some connections feel like recognition. Others feel like work that never ends. I read both energy maps — what they bring, what they trigger, what is possible between them. For the ones you cannot stop thinking about, and the ones you cannot understand.',price:1599,duration:'60 minutes'},
+  {id:'c5',icon:'&#128188;',name:'Career & Business Reading',desc:'The question is never just what to do. It is when. I read your energy cycles to tell you what you are built for, what you are fighting against in yourself, and whether this is the moment to move or the moment to wait.',price:1699,duration:'60 minutes'},
+  {id:'c6',icon:'&#10024;',name:'Full Reading + Crystal Set',desc:'A complete reading of your energy map followed by a crystal set chosen specifically for where you are in this chapter. Everything I know, applied to exactly where you are right now.',price:8888,duration:'90 minutes'},
   {id:'i1',icon:'🌱',name:'21 Days — The Foundation',desc:'Daily email guidance, personalised crystal prescription, weekly energy check-in call, morning intention and evening reflection prompts. Three weeks of daily practice built around your specific energy.',price:15000,duration:'21 days · No shipping'},
   {id:'i2',icon:'🌿',name:'40 Days — The Shift',desc:'Everything in The Foundation plus a mid-programme energy re-reading, crystal recalibration at day 21 if needed, and bi-weekly personal calls. 40 days is the minimum for any genuine energetic shift.',price:25000,duration:'40 days · No shipping'},
   {id:'i3',icon:'🌳',name:'90 Days — The Transformation',desc:'Everything in The Shift plus a full crystal set updated each month, weekly calls, and priority 1-hour response. Three months of daily presence for changes that become permanent.',price:55000,duration:'90 days · No shipping'}
@@ -908,6 +925,15 @@ var cart={},consCart={},curFilt='all',editId=null;
 var currency='INR',USD_RATE=93;
 
 function saveC(){localStorage.setItem('rv_content',JSON.stringify(C));}
+function exportSettings(){
+  var code = JSON.stringify(C, null, 2);
+  var blob = new Blob(['/* RUHANVI SETTINGS */\n'+code], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ruhanvi-settings.txt';
+  a.click();
+  toast('Settings downloaded!');
+}
 function saveCons(){localStorage.setItem('rv_cons',JSON.stringify(cons));}
 function saveProds(){localStorage.setItem('rv_prods',JSON.stringify(prods));}
 function saveStepsData(){localStorage.setItem('rv_steps',JSON.stringify(steps));}
