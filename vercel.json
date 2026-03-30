@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/order.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
