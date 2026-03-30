@@ -1549,7 +1549,7 @@ function onPaymentSuccess(paymentId) {
   var o = _pendingOrder;
   if(!o) return;
 
-  // Save to Orders tab
+  // ── 1. Save to local Orders tab (instant, works offline too) ──
   var today = new Date();
   orders.push({
     id:           Date.now(),
@@ -1566,7 +1566,34 @@ function onPaymentSuccess(paymentId) {
   });
   saveOrders();
 
-  // WhatsApp notification to you
+  // ── 2. POST to PHP backend → saves to server + sends you email ──
+  // IMPORTANT: Change 'ruhanvi2025secret' below to match the SECRET_KEY
+  // you set inside order.php
+  fetch('/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secret:     'ruhanvi2025secret',
+      paymentId:  paymentId,
+      name:       o.name,
+      email:      o.email,
+      phone:      o.phone,
+      address:    o.addr,
+      products:   o.itemsPlain.replace(/\|\s*$/, '').trim(),
+      amount:     o.upiTotal,
+      shipping:   o.hasProducts ? 'Rs.150' : 'FREE — consultation only'
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if(!res.success) console.warn('Backend warning:', res.error);
+  })
+  .catch(function(err){
+    // Silent fail — order already saved locally, WhatsApp will also notify you
+    console.warn('Backend unreachable:', err);
+  });
+
+  // ── 3. WhatsApp notification (opens in new tab so you get it on mobile) ──
   var msg = 'Hi Ruhanvi! 🙏 New Order — PAID ✅%0A%0A'
     + '👤 Name: '      + encodeURIComponent(o.name)   + '%0A'
     + '📱 WhatsApp: '  + encodeURIComponent(o.phone)  + '%0A'
@@ -1580,7 +1607,7 @@ function onPaymentSuccess(paymentId) {
 
   window.open('https://wa.me/' + C.whatsapp + '?text=' + msg, '_blank');
 
-  // Clear state
+  // ── 4. Clear state & show success ──
   _pendingOrder = null;
   cart = {}; consCart = {};
   updCount(); renderCart(); updateCartButtons(); renderServices();
@@ -1591,7 +1618,6 @@ function onPaymentSuccess(paymentId) {
 
   toast('🎉 Payment successful! Your order is confirmed.');
 
-  // Show on-screen success modal
   var ov = document.getElementById('paySuccessOv');
   var pidEl = document.getElementById('successPayId');
   if(pidEl) pidEl.textContent = 'Payment ID: ' + paymentId;
