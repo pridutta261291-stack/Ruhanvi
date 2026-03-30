@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Jost:wght@300;400;500&display=swap&font-display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 :root{--ivory:#FDF5F8;--warm:#FAE8F0;--gold:#D4547A;--gold-light:#F2B8CC;--gold-pale:#FCE8F0;--deep:#8B3A5A;--brown:#A0476E;--text:#3D1A2B;--text-mid:#9C6478;--text-muted:#C49BAD;--border:#F0D5E0;--white:#FFFFFF;--wa:#25D366;}
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
@@ -723,6 +724,21 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   </div>
 </div>
 
+<!-- PAYMENT SUCCESS MODAL -->
+<div id="paySuccessOv" style="display:none;position:fixed;inset:0;background:rgba(61,26,43,0.75);z-index:900;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--white);max-width:400px;width:100%;border-radius:12px;padding:36px 28px;text-align:center;position:relative;box-shadow:0 30px 80px rgba(139,58,90,0.25);">
+    <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--gold-pale),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:30px;">✦</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:400;color:var(--text);margin-bottom:8px;">Payment Confirmed</h2>
+    <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:6px;">Your order has been placed successfully.</p>
+    <p id="successPayId" style="font-size:11px;color:var(--text-muted);letter-spacing:0.06em;margin-bottom:20px;"></p>
+    <div style="background:var(--gold-pale);border-radius:8px;padding:12px 16px;margin-bottom:22px;text-align:left;">
+      <p style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">What happens next?</p>
+      <p style="font-size:12px;color:var(--text-mid);line-height:1.7;">We've received your order & payment. Expect a WhatsApp confirmation from us shortly. Your crystals will be shipped within 2–3 business days.</p>
+    </div>
+    <button onclick="closeSuccessModal()" style="width:100%;background:var(--deep);color:white;border:none;padding:13px;border-radius:6px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;">Continue Exploring</button>
+  </div>
+</div>
+
 <!-- CART -->
 <div class="cart-ov" id="cartOv" onclick="if(event.target===this)toggleCart()">
   <div class="cart-sb">
@@ -740,12 +756,8 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
       </div>
 
       <div id="upiPaySection" style="background:var(--ivory);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
-        <p style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Pay via UPI</p>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <p style="font-size:13px;font-weight:500;color:var(--text);font-family:'Jost',sans-serif;word-break:break-all;">9051266338@jupiteraxis</p>
-          <button onclick="copyUPI()" id="copyBtn" style="background:var(--deep);color:white;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-family:'Jost',sans-serif;cursor:pointer;flex-shrink:0;">Copy UPI</button>
-        </div>
-        <div style="background:var(--gold-pale);border-radius:6px;padding:9px 11px;margin-top:8px;">
+        <p style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Pay Securely via Razorpay</p>
+        <div style="background:var(--gold-pale);border-radius:6px;padding:9px 11px;margin-bottom:10px;">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-mid);margin-bottom:4px;">
             <span>Products</span><span id="upiProductAmt" style="font-weight:500;color:var(--text);"></span>
           </div>
@@ -756,7 +768,11 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
             <span style="font-weight:500;color:var(--text);">Total to Pay</span><span id="upiTotalAmt" style="font-weight:700;color:var(--deep);"></span>
           </div>
         </div>
-        <p style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5;">Open GPay / PhonePe / Paytm &rarr; paste UPI ID above &rarr; pay <strong id="payAmt" style="color:var(--deep);font-weight:600;"></strong></p>
+        <button onclick="openRazorpay()" id="rzpPayBtn" style="width:100%;background:#528FF0;color:white;border:none;padding:13px;border-radius:6px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background 0.2s;" onmouseover="this.style.background='#3b74d9'" onmouseout="this.style.background='#528FF0'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3L3 21h4l1.5-6h7L17 21h4L17 3H7zm2.5 9l1-4h3l1 4h-5z" fill="white"/></svg>
+          Pay <strong id="payAmt" style="color:white;font-weight:700;"></strong> via Razorpay
+        </button>
+        <p style="font-size:10px;color:var(--text-muted);margin-top:7px;text-align:center;line-height:1.5;">UPI &bull; Cards &bull; Net Banking &bull; Wallets — all accepted</p>
       </div>
       <div id="paypalSection" style="display:none;background:var(--ivory);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
         <p style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Pay via PayPal <span style="font-size:10px;color:var(--gold);font-style:italic;margin-left:4px;">International customers</span></p>
@@ -772,8 +788,8 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
           <p style="font-size:11px;color:var(--text-mid);line-height:1.5;">Every crystal ships with a certificate confirming it is genuine, ethically sourced and energetically cleansed.</p>
         </div>
       </div>
-      <button id="ssWhatsappBtn" class="cwa" style="background:var(--wa);border:none;cursor:pointer;margin-bottom:0;width:100%;" onclick="sendOrder(event)">
-        Send Order & Payment Screenshot
+      <button id="ssWhatsappBtn" class="cwa" style="background:var(--deep);border:none;cursor:pointer;margin-bottom:0;width:100%;" onclick="validateAndPay(event)">
+        Proceed to Payment
       </button>
     </div>
   </div>
@@ -827,7 +843,7 @@ var DEF_CONTENT={
   heroHeadingItalic:'sacred path',
   heroSub:'Browse freely. Trust your instincts. And if something in you is not sure — a short conversation before you choose can change everything you pick.',
   heroCta1:'Book a Reading ✦',heroCta2:'Explore Crystals ✦',
-  heroEmoji:'🌙',heroTag1:'&#10022; Moonlight cleansed',heroTag2:'&#10022; Energetically prescribed',heroTag3:'&#10022; Ships Worldwide',
+  heroEmoji:'🌙',heroTag1:'Moonlight cleansed',heroTag2:'Energetically prescribed',heroTag3:'Ships Worldwide',
   marquee:'Red Jasper,Garnet,Labradorite,Energy Reading,Amethyst,Birth Chart,Citrine,Tiger Eye,Protection Set,Abundance Set,7 Chakra,Pyrite,Black Tourmaline,Rose Quartz',
   servLabel:'Work with me',servTitle:'The reading that actually tells you the truth',
   servSub:'I do not do general. I read the specific energy map you were born with and I tell you what I see — including the things you have been circling around but have not yet asked.',
@@ -1421,87 +1437,174 @@ function renderCart(){
 function chgQ(id,d){cart[id]=Math.max(0,(cart[id]||0)+d);if(!cart[id])delete cart[id];updCount();renderCart();updateCartButtons();}
 function chgCons(id,d){consCart[id]=Math.max(0,(consCart[id]||0)+d);if(!consCart[id])delete consCart[id];updCount();renderCart();updateConsButtons(id);}
 
-function sendOrder(e){
+// ── RAZORPAY INTEGRATION ──────────────────────────────────────────────────────
+// Replace YOUR_RAZORPAY_KEY_ID below with your actual Key ID from
+// Razorpay Dashboard → Settings → API Keys (starts with rzp_live_...)
+var RZP_KEY = 'rzp_live_SWGtGUoRYL4NWS';
+
+// Shared order state (set by validateAndPay, used by openRazorpay)
+var _pendingOrder = null;
+
+function validateAndPay(e) {
   if(e) e.preventDefault();
 
-  var nameEl=document.getElementById('cName');
-  var phoneEl=document.getElementById('cPhone');
-  var emailEl=document.getElementById('cEmail');
-  var addrEl=document.getElementById('cAddr');
+  var nameEl  = document.getElementById('cName');
+  var phoneEl = document.getElementById('cPhone');
+  var emailEl = document.getElementById('cEmail');
+  var addrEl  = document.getElementById('cAddr');
 
-  var name=(nameEl?nameEl.value:'').trim();
-  var phone=(phoneEl?phoneEl.value:'').trim();
-  var email=(emailEl?emailEl.value:'').trim();
-  var addr=(addrEl?addrEl.value:'').trim();
+  var name  = (nameEl  ? nameEl.value  : '').trim();
+  var phone = (phoneEl ? phoneEl.value : '').trim();
+  var email = (emailEl ? emailEl.value : '').trim();
+  var addr  = (addrEl  ? addrEl.value  : '').trim();
 
-  if(!name){toast('Please enter your full name');if(nameEl)nameEl.focus();return;}
-  if(!phone){toast('Please enter your WhatsApp number');if(phoneEl)phoneEl.focus();return;}
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Please enter a valid email address');if(emailEl)emailEl.focus();return;}
-  if(!addr){toast('Please enter your full delivery address');if(addrEl)addrEl.focus();return;}
+  if(!name)  { toast('Please enter your full name');           if(nameEl)  nameEl.focus();  return; }
+  if(!phone) { toast('Please enter your WhatsApp number');     if(phoneEl) phoneEl.focus(); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    toast('Please enter a valid email address');               if(emailEl) emailEl.focus(); return;
+  }
+  if(!addr)  { toast('Please enter your full delivery address'); if(addrEl) addrEl.focus(); return; }
 
-  // Build order line items
-  var itemsPlain='', itemsWA='', tot=0;
-  Object.keys(cart).filter(function(k){return cart[k]>0;}).forEach(function(k){
-    var p=prods.find(function(x){return x.id==k;}); if(!p) return;
-    var effP=(p.discount&&p.discount>0)?Math.round(p.price*(1-p.discount/100)):p.price;
-    var s=effP*cart[k]; tot+=s;
-    itemsPlain+=p.name+' x'+cart[k]+' = Rs.'+s+' | ';
-    itemsWA+='%0A• '+encodeURIComponent(p.name+' x'+cart[k]+' = Rs.'+s);
+  // Build order data
+  var itemsPlain = '', itemsWA = '', tot = 0;
+  Object.keys(cart).filter(function(k){ return cart[k] > 0; }).forEach(function(k){
+    var p = prods.find(function(x){ return x.id == k; }); if(!p) return;
+    var effP = (p.discount && p.discount > 0) ? Math.round(p.price*(1-p.discount/100)) : p.price;
+    var s = effP * cart[k]; tot += s;
+    itemsPlain += p.name + ' x' + cart[k] + ' = Rs.' + s + ' | ';
+    itemsWA    += '%0A• ' + encodeURIComponent(p.name + ' x' + cart[k] + ' = Rs.' + s);
   });
-  Object.keys(consCart).filter(function(k){return consCart[k]>0;}).forEach(function(k){
-    var c=cons.find(function(x){return x.id===k;}); if(!c) return;
-    var effP=(c.discount&&c.discount>0)?Math.round(c.price*(1-c.discount/100)):c.price;
-    var s=effP*consCart[k]; tot+=s;
-    itemsPlain+=c.name+' (Consultation) x'+consCart[k]+' = Rs.'+s+' | ';
-    itemsWA+='%0A• '+encodeURIComponent(c.name+' (Consultation) x'+consCart[k]+' = Rs.'+s);
+  Object.keys(consCart).filter(function(k){ return consCart[k] > 0; }).forEach(function(k){
+    var c = cons.find(function(x){ return x.id === k; }); if(!c) return;
+    var effP = (c.discount && c.discount > 0) ? Math.round(c.price*(1-c.discount/100)) : c.price;
+    var s = effP * consCart[k]; tot += s;
+    itemsPlain += c.name + ' (Consultation) x' + consCart[k] + ' = Rs.' + s + ' | ';
+    itemsWA    += '%0A• ' + encodeURIComponent(c.name + ' (Consultation) x' + consCart[k] + ' = Rs.' + s);
   });
 
-  if(!itemsWA){toast('Your cart is empty');return;}
+  if(!itemsWA) { toast('Your cart is empty'); return; }
 
-  var hasProducts=Object.keys(cart).filter(function(k){return cart[k]>0;}).length>0;
-  var upiTotal=tot+(hasProducts?150:0);
+  var hasProducts = Object.keys(cart).filter(function(k){ return cart[k] > 0; }).length > 0;
+  var upiTotal    = tot + (hasProducts ? 150 : 0);
 
-  // Auto-save to Orders tab
-  var today=new Date();
+  _pendingOrder = {
+    name: name, phone: phone, email: email, addr: addr,
+    itemsPlain: itemsPlain, itemsWA: itemsWA,
+    tot: tot, upiTotal: upiTotal, hasProducts: hasProducts
+  };
+
+  openRazorpay();
+}
+
+function openRazorpay() {
+  if(!_pendingOrder) { toast('Please fill your details first.'); return; }
+  var o = _pendingOrder;
+
+  // Amount must be in paise (multiply ₹ by 100)
+  var amountPaise = o.upiTotal * 100;
+
+  var options = {
+    key: RZP_KEY,
+    amount: amountPaise,
+    currency: 'INR',
+    name: 'Ruhanvi',
+    description: 'Crystal & Consultation Order',
+    image: '', // optional: URL of your logo
+    prefill: {
+      name:    o.name,
+      email:   o.email,
+      contact: o.phone
+    },
+    notes: {
+      address: o.addr,
+      items:   o.itemsPlain
+    },
+    theme: {
+      color: '#8B3A5A'
+    },
+    handler: function(response) {
+      // Payment successful — response.razorpay_payment_id is the transaction ID
+      onPaymentSuccess(response.razorpay_payment_id);
+    },
+    modal: {
+      ondismiss: function() {
+        toast('Payment cancelled. You can try again.');
+      }
+    }
+  };
+
+  if(typeof Razorpay === 'undefined') {
+    toast('Razorpay could not load. Please check your internet connection.');
+    return;
+  }
+
+  var rzp = new Razorpay(options);
+  rzp.on('payment.failed', function(response){
+    toast('Payment failed: ' + (response.error.description || 'Please try again.'));
+  });
+  rzp.open();
+}
+
+function onPaymentSuccess(paymentId) {
+  var o = _pendingOrder;
+  if(!o) return;
+
+  // Save to Orders tab
+  var today = new Date();
   orders.push({
-    id:Date.now(),
-    customerName:name,
-    phone:phone,
-    address:addr,
-    products:itemsPlain.replace(/\|\s*$/,'').trim(),
-    amount:upiTotal,
-    date:fmtDate(today),
-    rawDate:today.toISOString().split('T')[0],
-    deliveryDate:fmtDate(addWorkingDays(today,7)),
-    notes:'Auto-captured from website checkout',
-    status:'pending'
+    id:           Date.now(),
+    customerName: o.name,
+    phone:        o.phone,
+    address:      o.addr,
+    products:     o.itemsPlain.replace(/\|\s*$/, '').trim(),
+    amount:       o.upiTotal,
+    date:         fmtDate(today),
+    rawDate:      today.toISOString().split('T')[0],
+    deliveryDate: fmtDate(addWorkingDays(today, 7)),
+    notes:        'Razorpay Payment ID: ' + paymentId,
+    status:       'pending'
   });
   saveOrders();
 
-  // Build WhatsApp message
-  var msg='Hi Ruhanvi! 🙏 New Order%0A%0A'
-    +'👤 Name: '+encodeURIComponent(name)+'%0A'
-    +'📱 WhatsApp: '+encodeURIComponent(phone)+'%0A'
-    +'📧 Email: '+encodeURIComponent(email)+'%0A'
-    +'📍 Address: '+encodeURIComponent(addr)+'%0A%0A'
-    +'🛒 Items:'+itemsWA+'%0A%0A'
-    +'💰 Products: Rs.'+tot+'%0A'
-    +'🚚 Delivery: '+(Object.keys(cart).filter(function(k){return cart[k]>0;}).length>0?'Rs.150':'FREE — consultation booking')+'%0A'
-    +'✅ Total: Rs.'+upiTotal+'%0A'
-    +'💳 UPI: 9051266338@jupiteraxis%0A%0A'
-    +'[Sending payment screenshot now 📸]';
+  // WhatsApp notification to you
+  var msg = 'Hi Ruhanvi! 🙏 New Order — PAID ✅%0A%0A'
+    + '👤 Name: '      + encodeURIComponent(o.name)   + '%0A'
+    + '📱 WhatsApp: '  + encodeURIComponent(o.phone)  + '%0A'
+    + '📧 Email: '     + encodeURIComponent(o.email)  + '%0A'
+    + '📍 Address: '   + encodeURIComponent(o.addr)   + '%0A%0A'
+    + '🛒 Items:'      + o.itemsWA                    + '%0A%0A'
+    + '💰 Products: Rs.' + o.tot + '%0A'
+    + '🚚 Delivery: '  + (o.hasProducts ? 'Rs.150' : 'FREE — consultation') + '%0A'
+    + '✅ Total Paid: Rs.' + o.upiTotal + '%0A'
+    + '💳 Razorpay ID: ' + encodeURIComponent(paymentId);
 
-  window.open('https://wa.me/'+C.whatsapp+'?text='+msg,'_blank');
+  window.open('https://wa.me/' + C.whatsapp + '?text=' + msg, '_blank');
 
-  // Clear cart
-  cart={}; consCart={};
+  // Clear state
+  _pendingOrder = null;
+  cart = {}; consCart = {};
   updCount(); renderCart(); updateCartButtons(); renderServices();
-  if(nameEl) nameEl.value='';
-  if(phoneEl) phoneEl.value='';
-  if(emailEl) emailEl.value='';
-  if(addrEl) addrEl.value='';
-  toast('Order sent! Check your Orders in Manage.');
+  document.getElementById('cName').value  = '';
+  document.getElementById('cPhone').value = '';
+  document.getElementById('cEmail').value = '';
+  document.getElementById('cAddr').value  = '';
+
+  toast('🎉 Payment successful! Your order is confirmed.');
+
+  // Show on-screen success modal
+  var ov = document.getElementById('paySuccessOv');
+  var pidEl = document.getElementById('successPayId');
+  if(pidEl) pidEl.textContent = 'Payment ID: ' + paymentId;
+  if(ov) { ov.style.display = 'flex'; toggleCart(); }
 }
+
+function closeSuccessModal() {
+  var ov = document.getElementById('paySuccessOv');
+  if(ov) ov.style.display = 'none';
+}
+
+// Legacy sendOrder kept for compatibility (not called from UI anymore)
+function sendOrder(e){ validateAndPay(e); }
 
 function copyUPI(){
   var upi='9051266338@jupiteraxis';
