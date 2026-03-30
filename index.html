@@ -242,6 +242,21 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
 .press-label{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);text-align:center;margin-bottom:20px;}
 .press-item{display:inline-flex;align-items:center;}
 .press-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--text-mid);font-style:italic;}
+/* ── Hamburger button ── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;min-width:44px;min-height:44px;z-index:510;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── Mobile drawer ── */
+.mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;bottom:0;background:rgba(253,245,248,0.98);backdrop-filter:blur(20px);z-index:499;flex-direction:column;padding:32px 6%;opacity:0;pointer-events:none;transform:translateY(-12px);transition:opacity 0.3s,transform 0.3s;}
+.mobile-menu.open{opacity:1;pointer-events:all;transform:translateY(0);}
+.mobile-menu a{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--text);text-decoration:none;padding:14px 0;border-bottom:1px solid var(--border);display:block;transition:color 0.2s;}
+.mobile-menu a:hover{color:var(--gold);}
+.mobile-menu .mm-sub{font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:24px;padding-bottom:8px;}
+.mobile-menu .mm-wa{display:flex;align-items:center;gap:10px;background:var(--wa);color:white;padding:13px 20px;text-decoration:none;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;margin-top:20px;border-radius:4px;}
+
 @media(max-width:900px){
   #whyiam .st{font-size:28px;}
   #whyiam > div > div[style*="grid-template-columns:1fr 2fr"]{grid-template-columns:1fr !important;gap:32px !important;}
@@ -253,18 +268,26 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   .story-inner{grid-template-columns:1fr;gap:30px;}.ct-inner{grid-template-columns:1fr;gap:40px;}
   .story-img{display:block;}.story-frame{aspect-ratio:1.2;max-height:320px;}
   .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .mobile-menu{display:flex;}
   .sv-grid{grid-template-columns:1fr;}
   .pg{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
   .rv-grid{grid-template-columns:1fr;}
   .steps{grid-template-columns:1fr 1fr;gap:24px;}
   .shop-hdr{flex-direction:column;align-items:flex-start;}
   section{padding:56px 5%;}
+
+  /* floating tags — rein them in on tablet */
+  .ft1{left:-4%;top:8%;}
+  .ft2{right:-4%;bottom:16%;}
+  .ft3{left:-4%;top:52%;}
 }
 @media(max-width:480px){
   #prodPanel{margin:0 !important;min-height:100vh;}
   #prodPanel > div > div:first-child > div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
 
   nav{padding:0 3%;height:64px;}
+  .mobile-menu{top:64px;}
   .nav-logo-wrap .logo{font-size:20px;}
   .nav-tagline{font-size:9px;letter-spacing:0.1em;}
   nav .nav-right .currency-wrap{display:none;}
@@ -282,6 +305,12 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
   .adm-tabs .atab{padding:9px 8px;font-size:10px;}
   .cart-sb{width:100%;}
   .adm-pn{width:100%;}
+
+  /* floating tags — hide on very small phones to avoid overflow */
+  .ftag{display:none;}
+
+  /* contact goes single column */
+  .ct-inner{grid-template-columns:1fr !important;gap:32px !important;}
 }
 </style>
 </head>
@@ -351,12 +380,31 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
       </select>
       <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:10px;color:var(--text-muted);">&#9660;</span>
     </div>
-    <!-- Cart center on mobile -->
+    <!-- Cart -->
     <button class="nav-cart" onclick="toggleCart()">&#128717;<span class="cart-count" id="cc">0</span></button>
-    <!-- Manage far right -->
+    <!-- Manage -->
     <button class="admin-btn" onclick="openAdmin()">&#9881; Manage</button>
+    <!-- Hamburger (mobile only) -->
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile navigation drawer -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" onclick="closeMobileMenu()">Consult</a>
+  <a href="#shop" onclick="closeMobileMenu()">Shop</a>
+  <a href="#zodiac" onclick="closeMobileMenu()">Zodiac</a>
+  <a href="#intention" onclick="closeMobileMenu()">Guidance</a>
+  <a href="#story" onclick="closeMobileMenu()">Our Story</a>
+  <a href="#contact" onclick="closeMobileMenu()">Connect</a>
+  <p class="mm-sub">Get in touch</p>
+  <a class="mm-wa" href="https://wa.me/918777307764?text=Hi%20Ruhanvi!" target="_blank" rel="noopener" onclick="closeMobileMenu()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp us
+  </a>
+</div>
 
 <section class="hero" style="position:relative;overflow:hidden;min-height:100vh;display:flex;align-items:center;padding:100px 6% 60px;background:#1a0a12;">
   <canvas id="crystalCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></canvas>
@@ -2501,6 +2549,24 @@ initCrystalCanvas();
 
   </div>
 </div>
+
+<script>
+// ── Mobile nav ──────────────────────────────────────────────
+function toggleMobileMenu(){
+  var btn=document.getElementById('hamburger');
+  var menu=document.getElementById('mobileMenu');
+  var open=menu.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+function closeMobileMenu(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow='';
+}
+// close on resize back to desktop
+window.addEventListener('resize',function(){if(window.innerWidth>900)closeMobileMenu();});
+</script>
 
 <script>
 (function(){
