@@ -768,7 +768,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
             <span style="font-weight:500;color:var(--text);">Total to Pay</span><span id="upiTotalAmt" style="font-weight:700;color:var(--deep);"></span>
           </div>
         </div>
-        <button onclick="openRazorpay()" id="rzpPayBtn" style="width:100%;background:#528FF0;color:white;border:none;padding:13px;border-radius:6px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background 0.2s;" onmouseover="this.style.background='#3b74d9'" onmouseout="this.style.background='#528FF0'">
+        <button onclick="validateAndPay(event)" id="rzpPayBtn" style="width:100%;background:#528FF0;color:white;border:none;padding:13px;border-radius:6px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.06em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background 0.2s;" onmouseover="this.style.background='#3b74d9'" onmouseout="this.style.background='#528FF0'">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3L3 21h4l1.5-6h7L17 21h4L17 3H7zm2.5 9l1-4h3l1 4h-5z" fill="white"/></svg>
           Pay <strong id="payAmt" style="color:white;font-weight:700;"></strong> via Razorpay
         </button>
@@ -788,9 +788,7 @@ footer{background:var(--deep);color:rgba(255,255,255,0.5);padding:44px 6%;text-a
           <p style="font-size:11px;color:var(--text-mid);line-height:1.5;">Every crystal ships with a certificate confirming it is genuine, ethically sourced and energetically cleansed.</p>
         </div>
       </div>
-      <button id="ssWhatsappBtn" class="cwa" style="background:var(--deep);border:none;cursor:pointer;margin-bottom:0;width:100%;" onclick="validateAndPay(event)">
-        Proceed to Payment
-      </button>
+
     </div>
   </div>
 </div>
