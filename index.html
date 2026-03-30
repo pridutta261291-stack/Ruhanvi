@@ -2077,7 +2077,7 @@ function tabOrders(b){
         if(o.status==='pending') html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="updateOrderStatus(\'' +oid+ '\',\'dispatched\')">Mark Dispatched 🚚</button>';
         if(o.status==='dispatched') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" onclick="updateOrderStatus(\'' +oid+ '\',\'delivered\')">Mark Delivered ✅</button>';
         html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="sendUpdateWAById(\'' +oid+ '\',' +JSON.stringify(o.customerName)+ ',' +JSON.stringify(o.phone)+ ',' +JSON.stringify(o.products)+ ',' +JSON.stringify(o.date||'')+ ',' +JSON.stringify(o.deliveryDate||'')+ ',' +JSON.stringify(o.status)+ ')">💬 WhatsApp Customer</button>';
-        html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" onclick="deleteOrder(\'' +oid+ \')">Delete</button>';
+        html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" onclick="deleteOrder(\''+oid+'\')">Delete</button>';
         html+='</div></div>';
       });
     }
