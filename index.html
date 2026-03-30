@@ -879,7 +879,7 @@ var DEF_REVIEWS=[
   {stars:5,text:'I was sceptical. I booked because a friend insisted. She looked at my energy, told me what I was carrying, and gave me a citrine. Three weeks later I had three job interviews after eight months of nothing. It is still on my desk.',name:'Debjani R. — Pune'}
 ];
 var DEF_CONS=[
-  {id:'c1',icon:'&#127760;',name:'Your Planetary Blueprint',desc:'The moment you were born, the sky made a map of you. Your nature, your cycles, the chapters your life is built to move through, and the ones you keep resisting. This reading reads that map out loud.',price:1,duration:'50 minutes'},
+  {id:'c1',icon:'&#127760;',name:'Your Planetary Blueprint',desc:'The moment you were born, the sky made a map of you. Your nature, your cycles, the chapters your life is built to move through, and the ones you keep resisting. This reading reads that map out loud.',price:1299,duration:'50 minutes'},
   {id:'c2',icon:'&#128142;',name:'Crystal Prescription',desc:'I read your energy map, understand the exact chapter you are in, and prescribe the stone that aligns with what your system actually needs right now. Not what is trending. Not what worked for someone else. Yours.',price:1299,duration:'50 minutes'},
   {id:'c3',icon:'&#127769;',name:'The Year Ahead',desc:'Every year has its own flavour of difficulty and its own gifts. This reading tells you what the next 12 months are genuinely asking of you — in work, in love, in health, in the parts of life you do not talk about at dinner.',price:1888,duration:'60 minutes'},
   {id:'c4',icon:'&#10084;&#65039;',name:'Relationship Reading',desc:'Some connections feel like recognition. Others feel like work that never ends. I read both energy maps — what they bring, what they trigger, what is possible between them. For the ones you cannot stop thinking about, and the ones you cannot understand.',price:1599,duration:'60 minutes'},
@@ -2476,6 +2476,7 @@ initCrystalCanvas();
       <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#5a4050;line-height:20px;margin:0 0 16px 0;text-align:center;">Get crystal prescriptions, energy readings,<br/>rare gemstone alerts &amp; personal guidance.</p>
 
       <input id="popupName" type="text" placeholder="Your name" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1px solid #e8d5d8;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#2d0e1e;background:#fff;outline:none;margin-bottom:10px;border-radius:2px;" />
+      <input id="popupEmail" type="email" placeholder="Email address" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1px solid #e8d5d8;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#2d0e1e;background:#fff;outline:none;margin-bottom:10px;border-radius:2px;" />
       
       <!-- Phone with country code -->
       <div style="display:flex;gap:8px;margin-bottom:14px;">
@@ -2503,10 +2504,12 @@ initCrystalCanvas();
 
 <script>
 (function(){
-  setTimeout(function(){
-    var p=document.getElementById('rvPopup');
-    if(p){p.style.display='flex';}
-  },3000);
+  if(!localStorage.getItem('rv_popup_seen')){
+    setTimeout(function(){
+      var p=document.getElementById('rvPopup');
+      if(p){p.style.display='flex';}
+    },3000);
+  }
 })();
 
 function closePopup(){
@@ -2516,14 +2519,17 @@ function closePopup(){
 
 function submitPopup(){
   var name=document.getElementById('popupName').value.trim();
+  var email=document.getElementById('popupEmail').value.trim();
   var country=document.getElementById('popupCountry').value;
   var phone=document.getElementById('popupPhone').value.trim();
-  if(!phone){alert('Please enter your phone number.');return;}
   if(!name){alert('Please enter your name.');return;}
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('Please enter a valid email address.');return;}
+  if(!phone){alert('Please enter your phone number.');return;}
   var full=country+phone;
   var soulsars=JSON.parse(localStorage.getItem('rv_soulsars')||'[]');
-  soulsars.unshift({name:name,phone:full,date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})});
+  soulsars.unshift({name:name,email:email,phone:full,date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})});
   localStorage.setItem('rv_soulsars',JSON.stringify(soulsars));
+  localStorage.setItem('rv_popup_seen','1');
   closePopup();
   if(typeof toast==='function') toast('Welcome to the Ruhanvi family ✨');
 }
@@ -2540,6 +2546,7 @@ function tabSoulsars(b){
     html+='<thead><tr style="border-bottom:2px solid var(--border);">';
     html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">#</th>';
     html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Name</th>';
+    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Email</th>';
     html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Phone</th>';
     html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Date</th>';
     html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">WhatsApp</th>';
@@ -2548,6 +2555,7 @@ function tabSoulsars(b){
       html+='<tr style="border-bottom:1px solid var(--border);">';
       html+='<td style="padding:10px 6px;color:var(--text-muted);">'+(i+1)+'</td>';
       html+='<td style="padding:10px 6px;font-weight:500;color:var(--deep);">'+s.name+'</td>';
+      html+='<td style="padding:10px 6px;color:var(--text);">'+(s.email||'—')+'</td>';
       html+='<td style="padding:10px 6px;color:var(--text);">'+s.phone+'</td>';
       html+='<td style="padding:10px 6px;color:var(--text-muted);font-size:11px;">'+s.date+'</td>';
       html+='<td style="padding:10px 6px;"><a href="https://wa.me/'+s.phone.replace(/[^0-9]/g,'')+'" target="_blank" style="background:#25D366;color:white;border:none;padding:5px 10px;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px;font-family:Jost,sans-serif;">Chat</a></td>';
