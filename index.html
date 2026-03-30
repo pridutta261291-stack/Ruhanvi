@@ -1615,7 +1615,7 @@ function onPaymentSuccess(paymentId) {
   // ── 2. POST to PHP backend → saves to server + sends you email ──
   // IMPORTANT: Change 'ruhanvi2025secret' below to match the SECRET_KEY
   // you set inside order.php
-  fetch('/api/order', {
+  fetch('/api/order?action=save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -1633,9 +1633,9 @@ function onPaymentSuccess(paymentId) {
   .then(function(r){ return r.json(); })
   .then(function(res){
     if(!res.success) console.warn('Backend warning:', res.error);
+    else console.log('Order saved to server ✓');
   })
   .catch(function(err){
-    // Silent fail — order already saved locally, WhatsApp will also notify you
     console.warn('Backend unreachable:', err);
   });
 
@@ -2014,90 +2014,98 @@ function tabContact(b){
   '<button class="asave" onclick="C.footerTagline=v(\'ftTag\');C.footerCopy=v(\'ftCopy\');C.footerNote=v(\'ftNote\');saveC();renderSite();toast(\'Footer saved!\')">Save Footer</button></div>';
 }
 
+// Server-side order helpers
+var SERVER_SECRET = 'ruhanvi2025secret';
+
+function apiFetch(action, payload, cb) {
+  var url = '/api/order?action=' + action + (action === 'list' ? '&secret=' + SERVER_SECRET : '');
+  var opts = { method: action === 'list' ? 'GET' : 'POST', headers: { 'Content-Type': 'application/json' } };
+  if (action !== 'list') opts.body = JSON.stringify(Object.assign({ secret: SERVER_SECRET }, payload));
+  fetch(url, opts)
+    .then(function(r){ return r.json(); })
+    .then(function(res){ cb(null, res); })
+    .catch(function(err){ cb(err, null); });
+}
+
 function tabOrders(b){
-  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">';
-  html+='<h3 class="ast" style="margin:0;">Customer Orders ('+orders.length+')</h3>';
-  html+='<button class="asave" onclick="openAddOrder()">+ Add Order</button></div>';
-
-  if(!orders.length){
-    html+='<div class="emp"><div class="ei">📦</div><p>No orders yet. Add your first order after receiving a WhatsApp payment.</p></div>';
-  } else {
-    // Summary bar
-    var pending=orders.filter(function(o){return o.status==='pending';}).length;
-    var dispatched=orders.filter(function(o){return o.status==='dispatched';}).length;
-    var delivered=orders.filter(function(o){return o.status==='delivered';}).length;
-    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">';
-    html+='<div style="background:#FFF3E0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">⏳</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#E65100;margin-top:2px;">Pending</div><div style="font-size:20px;font-weight:600;color:#E65100;">'+pending+'</div></div>';
-    html+='<div style="background:#E8F5E9;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">🚚</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#2E7D32;margin-top:2px;">Dispatched</div><div style="font-size:20px;font-weight:600;color:#2E7D32;">'+dispatched+'</div></div>';
-    html+='<div style="background:#E3F2FD;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">✅</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#1565C0;margin-top:2px;">Delivered</div><div style="font-size:20px;font-weight:600;color:#1565C0;">'+delivered+'</div></div>';
-    html+='</div>';
-
-    // Sort: newest first
-    var sorted=orders.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);});
-    sorted.forEach(function(o,i){
-      var realIdx=orders.indexOf(o);
-      var statusColor=o.status==='delivered'?'#1565C0':o.status==='dispatched'?'#2E7D32':'#E65100';
-      var statusBg=o.status==='delivered'?'#E3F2FD':o.status==='dispatched'?'#E8F5E9':'#FFF3E0';
-      var delivDate=o.deliveryDate?o.deliveryDate:'—';
-      html+='<div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--white);">';
-      html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">';
-      html+='<div>';
-      html+='<div style="font-size:14px;font-weight:600;color:var(--text);">'+o.customerName+'</div>';
-      html+='<div style="font-size:12px;color:var(--text-muted);margin-top:1px;">📱 '+o.phone+'</div>';
-      html+='</div>';
-      html+='<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:'+statusBg+';color:'+statusColor+';letter-spacing:0.06em;text-transform:uppercase;font-weight:500;flex-shrink:0;">'+o.status+'</span>';
-      html+='</div>';
-      html+='<div style="background:var(--ivory);border-radius:6px;padding:10px;margin-bottom:10px;">';
-      html+='<div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Products</div>';
-      html+='<div style="font-size:13px;color:var(--text);line-height:1.7;">'+o.products+'</div>';
-      html+='</div>';
-      html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">';
-      html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Order Date</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">'+o.date+'</div></div>';
-      html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Est. Delivery</div><div style="font-size:12px;font-weight:500;color:var(--deep);margin-top:2px;">'+delivDate+'</div></div>';
-      html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Amount</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">Rs.'+o.amount+'</div></div>';
-      html+='</div>';
-      if(o.address){html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 '+o.address+'</div>';}
-      html+='<div style="display:flex;gap:6px;flex-wrap:wrap;">';
-      if(o.status==='pending') html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="updateOrderStatus('+realIdx+',\'dispatched\')">Mark Dispatched 🚚</button>';
-      if(o.status==='dispatched') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" onclick="updateOrderStatus('+realIdx+',\'delivered\')">Mark Delivered ✅</button>';
-      html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="sendUpdateWA('+realIdx+')">WhatsApp Customer 💬</button>';
-      html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" onclick="deleteOrder('+realIdx+')">Delete</button>';
-      html+='</div></div>';
-    });
-  }
-
-  html+='<div id="addOrderForm" style="display:none;background:var(--warm);border-radius:10px;padding:16px;margin-top:14px;border:1px solid var(--border);">';
-  html+='<div style="font-size:14px;font-weight:600;margin-bottom:12px;">Add New Order</div>';
-  html+='<div class="afg"><label class="afl">Customer Name *</label><input class="afi" id="oCustName" placeholder="e.g. Meera Sharma"></div>';
-  html+='<div class="afg"><label class="afl">WhatsApp Number *</label><input class="afi" id="oCustPhone" placeholder="e.g. 9876543210"></div>';
-  html+='<div class="afg"><label class="afl">Delivery Address</label><textarea class="afta" id="oCustAddr" placeholder="Flat, building, street, area, city, pincode"></textarea></div>';
-  html+='<div class="afg"><label class="afl">Products Purchased *</label><textarea class="afta" id="oProducts" placeholder="e.g. Amethyst x1, Citrine x2, Nazar Raksha x1"></textarea></div>';
-  html+='<div class="afrow">';
-  html+='<div class="afg"><label class="afl">Total Amount (Rs.) *</label><input class="afi" type="number" id="oAmount" placeholder="e.g. 2748"></div>';
-  html+='<div class="afg"><label class="afl">Order Date *</label><input class="afi" type="date" id="oDate" value="'+new Date().toISOString().split('T')[0]+'"></div>';
-  html+='</div>';
-  html+='<div class="afg"><label class="afl">Estimated Delivery <span style="color:var(--gold);font-style:italic;text-transform:none;letter-spacing:0;">(auto: 7 working days)</span></label><input class="afi" id="oDelivery" placeholder="Auto-calculated" readonly style="background:var(--gold-pale);color:var(--deep);font-weight:500;"></div>';
-  html+='<div class="afg"><label class="afl">Notes (optional)</label><input class="afi" id="oNotes" placeholder="e.g. Gift wrap requested, customer is a repeat buyer"></div>';
-  html+='<div style="display:flex;gap:8px;">';
-  html+='<button class="asave asave-full" onclick="saveNewOrder()">Save Order</button>';
-  html+='<button class="acancel" onclick="document.getElementById(\'addOrderForm\').style.display=\'none\'">Cancel</button>';
-  html+='</div></div>';
-
-  b.innerHTML=html;
-
-  // Wire up auto delivery date calculation
-  var dateInp=document.getElementById('oDate');
-  if(dateInp){
-    function calcDelivery(){
-      var v=dateInp.value;
-      if(!v) return;
-      var d=addWorkingDays(new Date(v),7);
-      var delInp=document.getElementById('oDelivery');
-      if(delInp) delInp.value=fmtDate(d);
+  b.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading orders…</div>';
+  apiFetch('list', {}, function(err, res) {
+    if (err || !res || !res.success) {
+      b.innerHTML = '<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load orders. Check JSONBIN_BIN_ID and JSONBIN_API_KEY in Vercel environment variables.</div>';
+      return;
     }
-    dateInp.addEventListener('change',calcDelivery);
-    calcDelivery();
-  }
+    var serverOrders = res.orders || [];
+    var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">';
+    html+='<h3 class="ast" style="margin:0;">Customer Orders ('+serverOrders.length+')</h3>';
+    html+='<button class="asave" onclick="openAddOrder()">+ Add Order</button></div>';
+    if(!serverOrders.length){
+      html+='<div class="emp"><div class="ei">📦</div><p>No orders yet. They will appear here automatically after customers pay via Razorpay.</p></div>';
+    } else {
+      var pending=serverOrders.filter(function(o){return o.status==='pending';}).length;
+      var dispatched=serverOrders.filter(function(o){return o.status==='dispatched';}).length;
+      var delivered=serverOrders.filter(function(o){return o.status==='delivered';}).length;
+      html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">';
+      html+='<div style="background:#FFF3E0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">⏳</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#E65100;margin-top:2px;">Pending</div><div style="font-size:20px;font-weight:600;color:#E65100;">'+pending+'</div></div>';
+      html+='<div style="background:#E8F5E9;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">🚚</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#2E7D32;margin-top:2px;">Dispatched</div><div style="font-size:20px;font-weight:600;color:#2E7D32;">'+dispatched+'</div></div>';
+      html+='<div style="background:#E3F2FD;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">✅</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#1565C0;margin-top:2px;">Delivered</div><div style="font-size:20px;font-weight:600;color:#1565C0;">'+delivered+'</div></div>';
+      html+='</div>';
+      serverOrders.forEach(function(o){
+        var statusColor=o.status==='delivered'?'#1565C0':o.status==='dispatched'?'#2E7D32':'#E65100';
+        var statusBg=o.status==='delivered'?'#E3F2FD':o.status==='dispatched'?'#E8F5E9':'#FFF3E0';
+        var delivDate=o.deliveryDate?o.deliveryDate:'—';
+        var oid=String(o.id);
+        html+='<div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--white);">';
+        html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">';
+        html+='<div><div style="font-size:14px;font-weight:600;color:var(--text);">'+o.customerName+'</div>';
+        html+='<div style="font-size:12px;color:var(--text-muted);margin-top:1px;">📱 '+o.phone+'</div>';
+        if(o.email) html+='<div style="font-size:12px;color:var(--text-muted);">📧 '+o.email+'</div>';
+        html+='</div>';
+        html+='<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:'+statusBg+';color:'+statusColor+';letter-spacing:0.06em;text-transform:uppercase;font-weight:500;flex-shrink:0;">'+o.status+'</span>';
+        html+='</div>';
+        html+='<div style="background:var(--ivory);border-radius:6px;padding:10px;margin-bottom:10px;">';
+        html+='<div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Products</div>';
+        html+='<div style="font-size:13px;color:var(--text);line-height:1.7;">'+o.products+'</div>';
+        html+='</div>';
+        html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">';
+        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Order Date</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">'+o.date+'</div></div>';
+        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Est. Delivery</div><div style="font-size:12px;font-weight:500;color:var(--deep);margin-top:2px;">'+delivDate+'</div></div>';
+        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Amount</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">Rs.'+o.amount+'</div></div>';
+        html+='</div>';
+        if(o.address){html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 '+o.address+'</div>';}
+        if(o.notes){html+='<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;font-style:italic;">🔖 '+o.notes+'</div>';}
+        html+='<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+        if(o.status==='pending') html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="updateOrderStatus(\'' +oid+ '\',\'dispatched\')">Mark Dispatched 🚚</button>';
+        if(o.status==='dispatched') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" onclick="updateOrderStatus(\'' +oid+ '\',\'delivered\')">Mark Delivered ✅</button>';
+        html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="sendUpdateWAById(\'' +oid+ '\',' +JSON.stringify(o.customerName)+ ',' +JSON.stringify(o.phone)+ ',' +JSON.stringify(o.products)+ ',' +JSON.stringify(o.date||'')+ ',' +JSON.stringify(o.deliveryDate||'')+ ',' +JSON.stringify(o.status)+ ')">💬 WhatsApp Customer</button>';
+        html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" onclick="deleteOrder(\'' +oid+ \')">Delete</button>';
+        html+='</div></div>';
+      });
+    }
+    html+='<div id="addOrderForm" style="display:none;background:var(--warm);border-radius:10px;padding:16px;margin-top:14px;border:1px solid var(--border);">';
+    html+='<div style="font-size:14px;font-weight:600;margin-bottom:12px;">Add New Order</div>';
+    html+='<div class="afg"><label class="afl">Customer Name *</label><input class="afi" id="oCustName" placeholder="e.g. Meera Sharma"></div>';
+    html+='<div class="afg"><label class="afl">WhatsApp Number *</label><input class="afi" id="oCustPhone" placeholder="e.g. 9876543210"></div>';
+    html+='<div class="afg"><label class="afl">Delivery Address</label><textarea class="afta" id="oCustAddr" placeholder="Flat, building, street, area, city, pincode"></textarea></div>';
+    html+='<div class="afg"><label class="afl">Products Purchased *</label><textarea class="afta" id="oProducts" placeholder="e.g. Amethyst x1, Citrine x2"></textarea></div>';
+    html+='<div class="afrow"><div class="afg"><label class="afl">Total Amount (Rs.) *</label><input class="afi" type="number" id="oAmount" placeholder="e.g. 2748"></div>';
+    html+='<div class="afg"><label class="afl">Order Date *</label><input class="afi" type="date" id="oDate" value="'+new Date().toISOString().split('T')[0]+'"></div></div>';
+    html+='<div class="afg"><label class="afl">Estimated Delivery</label><input class="afi" id="oDelivery" placeholder="Auto-calculated" readonly style="background:var(--gold-pale);color:var(--deep);font-weight:500;"></div>';
+    html+='<div class="afg"><label class="afl">Notes (optional)</label><input class="afi" id="oNotes" placeholder="e.g. Gift wrap requested"></div>';
+    html+='<div style="display:flex;gap:8px;"><button class="asave asave-full" onclick="saveNewOrder()">Save Order</button>';
+    html+='<button class="acancel" onclick="document.getElementById(\'addOrderForm\').style.display=\'none\'">Cancel</button></div></div>';
+    b.innerHTML=html;
+    var dateInp=document.getElementById('oDate');
+    if(dateInp){
+      function calcDelivery(){
+        var v=dateInp.value;if(!v)return;
+        var d=addWorkingDays(new Date(v),7);
+        var delInp=document.getElementById('oDelivery');
+        if(delInp) delInp.value=fmtDate(d);
+      }
+      dateInp.addEventListener('change',calcDelivery);
+      calcDelivery();
+    }
+  });
 }
 
 function openAddOrder(){
@@ -2111,56 +2119,47 @@ function saveNewOrder(){
   var addr=(document.getElementById('oCustAddr').value||'').trim();
   var prods_=(document.getElementById('oProducts').value||'').trim();
   var amount=(document.getElementById('oAmount').value||'').trim();
-  var date=(document.getElementById('oDate').value||'').trim();
   var notes=(document.getElementById('oNotes').value||'').trim();
   if(!name){toast('Please enter customer name');return;}
   if(!prods_){toast('Please enter products purchased');return;}
   if(!amount){toast('Please enter amount');return;}
-  if(!date){toast('Please select order date');return;}
-  var delDate=fmtDate(addWorkingDays(new Date(date),7));
-  var fmtOrderDate=fmtDate(new Date(date));
-  orders.push({
-    id:Date.now(),
-    customerName:name,
-    phone:phone,
-    address:addr,
-    products:prods_,
-    amount:parseInt(amount),
-    date:fmtOrderDate,
-    rawDate:date,
-    deliveryDate:delDate,
-    notes:notes,
-    status:'pending'
+  apiFetch('save',{
+    name:name,phone:phone,address:addr,products:prods_,
+    amount:parseInt(amount),paymentId:'manual-'+Date.now(),
+    email:'',shipping:'',notes:notes
+  },function(err,res){
+    if(err||!res||!res.success){toast('Error saving order');return;}
+    toast('Order saved!');
+    tabOrders(document.getElementById('admBody'));
   });
-  saveOrders();
-  toast('Order saved!');
-  tabOrders(document.getElementById('admBody'));
 }
 
-function updateOrderStatus(idx,status){
-  if(!orders[idx]) return;
-  orders[idx].status=status;
-  saveOrders();
-  toast('Order updated to: '+status);
-  tabOrders(document.getElementById('admBody'));
+function updateOrderStatus(id,status){
+  apiFetch('update',{id:id,status:status},function(err,res){
+    if(err||!res||!res.success){toast('Error updating order');return;}
+    toast('Order updated to: '+status);
+    tabOrders(document.getElementById('admBody'));
+  });
 }
 
-function deleteOrder(idx){
-  orders.splice(idx,1);
-  saveOrders();
-  toast('Order deleted');
-  tabOrders(document.getElementById('admBody'));
+function deleteOrder(id){
+  if(!confirm('Delete this order?'))return;
+  apiFetch('delete',{id:id},function(err,res){
+    if(err||!res||!res.success){toast('Error deleting order');return;}
+    toast('Order deleted');
+    tabOrders(document.getElementById('admBody'));
+  });
 }
 
-function sendUpdateWA(idx){
-  var o=orders[idx]; if(!o||!o.phone) return;
-  var msg='Hi '+encodeURIComponent(o.customerName)+'! 🙏%0A%0AYour Ruhanvi order update:%0A%0A'
-    +'📦 Products: '+encodeURIComponent(o.products)+'%0A'
-    +'📅 Order Date: '+encodeURIComponent(o.date)+'%0A'
-    +'🚚 Est. Delivery: '+encodeURIComponent(o.deliveryDate)+'%0A'
-    +'📋 Status: '+encodeURIComponent(o.status.toUpperCase())+'%0A%0A'
+function sendUpdateWAById(id,name,phone,products,date,deliveryDate,status){
+  if(!phone)return;
+  var msg='Hi '+name+'! 🙏%0A%0AYour Ruhanvi order update:%0A%0A'
+    +'📦 Products: '+encodeURIComponent(products)+'%0A'
+    +'📅 Order Date: '+encodeURIComponent(date)+'%0A'
+    +'🚚 Est. Delivery: '+encodeURIComponent(deliveryDate)+'%0A'
+    +'📋 Status: '+encodeURIComponent(status.toUpperCase())+'%0A%0A'
     +'Thank you for choosing Ruhanvi 🌸 Your crystals have been cleansed and charged with intention before dispatch.';
-  window.open('https://wa.me/91'+o.phone+'?text='+msg,'_blank');
+  window.open('https://wa.me/91'+phone+'?text='+msg,'_blank');
 }
 
 function tabGuidance(b){
@@ -2592,53 +2591,72 @@ function submitPopup(){
   if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('Please enter a valid email address.');return;}
   if(!phone){alert('Please enter your phone number.');return;}
   var full=country+phone;
-  var soulsars=JSON.parse(localStorage.getItem('rv_soulsars')||'[]');
-  soulsars.unshift({name:name,email:email,phone:full,date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})});
-  localStorage.setItem('rv_soulsars',JSON.stringify(soulsars));
+  // Save to server
+  fetch('/api/order?action=soulstar-save',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:name,email:email,phone:full})
+  }).catch(function(){});
   localStorage.setItem('rv_popup_seen','1');
   closePopup();
   if(typeof toast==='function') toast('Welcome to the Ruhanvi family ✨');
 }
 
 function tabSoulsars(b){
-  var soulsars=JSON.parse(localStorage.getItem('rv_soulsars')||'[]');
-  var html='<h3 class="ast">Soulstar Signups</h3>';
-  html+='<div class="asec"><div class="asec-title">Visitors who signed up from the popup ('+soulsars.length+')</div>';
-  if(!soulsars.length){
-    html+='<p style="color:var(--text-muted);font-size:13px;padding:16px 0;">No signups yet. They will appear here when visitors fill the popup.</p>';
-  } else {
-    html+='<button class="asave" style="margin-bottom:16px;" onclick="clearSoulsars()">Clear All</button>';
-    html+='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
-    html+='<thead><tr style="border-bottom:2px solid var(--border);">';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">#</th>';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Name</th>';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Email</th>';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Phone</th>';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Date</th>';
-    html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">WhatsApp</th>';
-    html+='</tr></thead><tbody>';
-    soulsars.forEach(function(s,i){
-      html+='<tr style="border-bottom:1px solid var(--border);">';
-      html+='<td style="padding:10px 6px;color:var(--text-muted);">'+(i+1)+'</td>';
-      html+='<td style="padding:10px 6px;font-weight:500;color:var(--deep);">'+s.name+'</td>';
-      html+='<td style="padding:10px 6px;color:var(--text);">'+(s.email||'—')+'</td>';
-      html+='<td style="padding:10px 6px;color:var(--text);">'+s.phone+'</td>';
-      html+='<td style="padding:10px 6px;color:var(--text-muted);font-size:11px;">'+s.date+'</td>';
-      html+='<td style="padding:10px 6px;"><a href="https://wa.me/'+s.phone.replace(/[^0-9]/g,'')+'" target="_blank" style="background:#25D366;color:white;border:none;padding:5px 10px;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px;font-family:Jost,sans-serif;">Chat</a></td>';
-      html+='</tr>';
+  b.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading soulsars…</div>';
+  fetch('/api/order?action=soulstar-list&secret='+SERVER_SECRET)
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(!res||!res.success){
+        b.innerHTML='<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load soulsars. Check that JSONBIN_SOULSTAR_ID is set in Vercel environment variables.</div>';
+        return;
+      }
+      var soulsars=res.soulsars||[];
+      var html='<h3 class="ast">Soulstar Signups</h3>';
+      html+='<div class="asec"><div class="asec-title">Visitors who signed up from the popup ('+soulsars.length+')</div>';
+      if(!soulsars.length){
+        html+='<p style="color:var(--text-muted);font-size:13px;padding:16px 0;">No signups yet. They will appear here when visitors fill the popup.</p>';
+      } else {
+        html+='<button class="asave" style="margin-bottom:16px;" onclick="clearSoulsars()">Clear All</button>';
+        html+='<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+        html+='<thead><tr style="border-bottom:2px solid var(--border);">';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">#</th>';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Name</th>';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Email</th>';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Phone</th>';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">Date</th>';
+        html+='<th style="text-align:left;padding:8px 6px;color:var(--gold);font-weight:500;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;">WhatsApp</th>';
+        html+='</tr></thead><tbody>';
+        soulsars.forEach(function(s,i){
+          html+='<tr style="border-bottom:1px solid var(--border);">';
+          html+='<td style="padding:10px 6px;color:var(--text-muted);">'+(i+1)+'</td>';
+          html+='<td style="padding:10px 6px;font-weight:500;color:var(--deep);">'+s.name+'</td>';
+          html+='<td style="padding:10px 6px;color:var(--text);">'+(s.email||'—')+'</td>';
+          html+='<td style="padding:10px 6px;color:var(--text);">'+s.phone+'</td>';
+          html+='<td style="padding:10px 6px;color:var(--text-muted);font-size:11px;">'+s.date+'</td>';
+          html+='<td style="padding:10px 6px;"><a href="https://wa.me/'+s.phone.replace(/[^0-9]/g,'')+'" target="_blank" style="background:#25D366;color:white;border:none;padding:5px 10px;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px;font-family:Jost,sans-serif;">Chat</a></td>';
+          html+='</tr>';
+        });
+        html+='</tbody></table>';
+      }
+      html+='</div>';
+      b.innerHTML=html;
+    })
+    .catch(function(){
+      b.innerHTML='<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Network error loading soulsars.</div>';
     });
-    html+='</tbody></table>';
-  }
-  html+='</div>';
-  b.innerHTML=html;
 }
 
 function clearSoulsars(){
   if(confirm('Clear all soulstar signups?')){
-    localStorage.removeItem('rv_soulsars');
-    var b=document.getElementById('admBody');
-    tabSoulsars(b);
-    toast('Cleared');
+    fetch('/api/order?action=soulstar-clear',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({secret:SERVER_SECRET})
+    }).then(function(){
+      tabSoulsars(document.getElementById('admBody'));
+      toast('Cleared');
+    });
   }
 }
 
