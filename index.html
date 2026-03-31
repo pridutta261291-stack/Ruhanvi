@@ -985,7 +985,7 @@ var DEF_PRODS=[
 {id:37,name:'Wealth Abundance',intent:'Prosperity · Wealth · Success',price:1499,emoji:'💰',cat:'abundance',badge:'Special',discount:0},
 {id:38,name:'Yellow calcite',intent:'Optimism · Energy · Confidence',price:1199,emoji:'💛',cat:'abundance',badge:'',discount:0}
 ];
-function saveOrders(){localStorage.setItem('rv_orders',JSON.stringify(orders));}
+function saveOrders(){}
 function addWorkingDays(date,days){
   var d=new Date(date); var added=0;
   while(added<days){d.setDate(d.getDate()+1);var day=d.getDay();if(day!==0&&day!==6)added++;}
@@ -1008,7 +1008,7 @@ C.ctWaText=DEF_CONTENT.ctWaText;
 var cons=JSON.parse(localStorage.getItem('rv_cons')||'null')||JSON.parse(JSON.stringify(DEF_CONS));
 var steps=JSON.parse(localStorage.getItem('rv_steps')||'null')||JSON.parse(JSON.stringify(DEF_STEPS));
 var reviews=JSON.parse(localStorage.getItem('rv_reviews')||'null')||JSON.parse(JSON.stringify(DEF_REVIEWS));
-var orders=JSON.parse(localStorage.getItem('rv_orders')||'null')||[];
+var orders=[];
 // Always reset products to latest list — clears any old cached data
 localStorage.removeItem('rv_prods');
 var prods=JSON.parse(JSON.stringify(DEF_PRODS));
@@ -1595,22 +1595,7 @@ function onPaymentSuccess(paymentId) {
   var o = _pendingOrder;
   if(!o) return;
 
-  // ── 1. Save to local Orders tab (instant, works offline too) ──
-  var today = new Date();
-  orders.push({
-    id:           Date.now(),
-    customerName: o.name,
-    phone:        o.phone,
-    address:      o.addr,
-    products:     o.itemsPlain.replace(/\|\s*$/, '').trim(),
-    amount:       o.upiTotal,
-    date:         fmtDate(today),
-    rawDate:      today.toISOString().split('T')[0],
-    deliveryDate: fmtDate(addWorkingDays(today, 7)),
-    notes:        'Razorpay Payment ID: ' + paymentId,
-    status:       'pending'
-  });
-  saveOrders();
+  // Order is saved to server via the fetch call below
 
   // ── 2. POST to PHP backend → saves to server + sends you email ──
   // IMPORTANT: Change 'ruhanvi2025secret' below to match the SECRET_KEY
@@ -1633,7 +1618,6 @@ function onPaymentSuccess(paymentId) {
   .then(function(r){ return r.json(); })
   .then(function(res){
     if(!res.success) console.warn('Backend warning:', res.error);
-    else console.log('Order saved to server ✓');
   })
   .catch(function(err){
     console.warn('Backend unreachable:', err);
@@ -2014,27 +1998,23 @@ function tabContact(b){
   '<button class="asave" onclick="C.footerTagline=v(\'ftTag\');C.footerCopy=v(\'ftCopy\');C.footerNote=v(\'ftNote\');saveC();renderSite();toast(\'Footer saved!\')">Save Footer</button></div>';
 }
 
-// Server-side order helpers
-var SERVER_SECRET = 'ruhanvi2025secret';
+var SERVER_SECRET='ruhanvi2025secret';
 
-function apiFetch(action, payload, cb) {
-  var url = '/api/order?action=' + action + (action === 'list' ? '&secret=' + SERVER_SECRET : '');
-  var opts = { method: action === 'list' ? 'GET' : 'POST', headers: { 'Content-Type': 'application/json' } };
-  if (action !== 'list') opts.body = JSON.stringify(Object.assign({ secret: SERVER_SECRET }, payload));
-  fetch(url, opts)
-    .then(function(r){ return r.json(); })
-    .then(function(res){ cb(null, res); })
-    .catch(function(err){ cb(err, null); });
+function apiFetch(action,payload,cb){
+  var url='/api/order?action='+action+(action==='list'?'&secret='+SERVER_SECRET:'');
+  var opts={method:action==='list'?'GET':'POST',headers:{'Content-Type':'application/json'}};
+  if(action!=='list') opts.body=JSON.stringify(Object.assign({secret:SERVER_SECRET},payload));
+  fetch(url,opts).then(function(r){return r.json();}).then(function(res){cb(null,res);}).catch(function(err){cb(err,null);});
 }
 
 function tabOrders(b){
-  b.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading orders…</div>';
-  apiFetch('list', {}, function(err, res) {
-    if (err || !res || !res.success) {
-      b.innerHTML = '<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load orders. Check JSONBIN_BIN_ID and JSONBIN_API_KEY in Vercel environment variables.</div>';
+  b.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading orders…</div>';
+  apiFetch('list',{},function(err,res){
+    if(err||!res||!res.success){
+      b.innerHTML='<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load orders. Check JSONBIN_BIN_ID and JSONBIN_API_KEY in Vercel environment variables.</div>';
       return;
     }
-    var serverOrders = res.orders || [];
+    var serverOrders=res.orders||[];
     var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">';
     html+='<h3 class="ast" style="margin:0;">Customer Orders ('+serverOrders.length+')</h3>';
     html+='<button class="asave" onclick="openAddOrder()">+ Add Order</button></div>';
@@ -2045,39 +2025,38 @@ function tabOrders(b){
       var dispatched=serverOrders.filter(function(o){return o.status==='dispatched';}).length;
       var delivered=serverOrders.filter(function(o){return o.status==='delivered';}).length;
       html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">';
-      html+='<div style="background:#FFF3E0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">⏳</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#E65100;margin-top:2px;">Pending</div><div style="font-size:20px;font-weight:600;color:#E65100;">'+pending+'</div></div>';
-      html+='<div style="background:#E8F5E9;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">🚚</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#2E7D32;margin-top:2px;">Dispatched</div><div style="font-size:20px;font-weight:600;color:#2E7D32;">'+dispatched+'</div></div>';
-      html+='<div style="background:#E3F2FD;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">✅</div><div style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#1565C0;margin-top:2px;">Delivered</div><div style="font-size:20px;font-weight:600;color:#1565C0;">'+delivered+'</div></div>';
+      html+='<div style="background:#FFF3E0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">⏳</div><div style="font-size:11px;color:#E65100;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Pending</div><div style="font-size:20px;font-weight:600;color:#E65100;">'+pending+'</div></div>';
+      html+='<div style="background:#E8F5E9;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">🚚</div><div style="font-size:11px;color:#2E7D32;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Dispatched</div><div style="font-size:20px;font-weight:600;color:#2E7D32;">'+dispatched+'</div></div>';
+      html+='<div style="background:#E3F2FD;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:18px;">✅</div><div style="font-size:11px;color:#1565C0;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Delivered</div><div style="font-size:20px;font-weight:600;color:#1565C0;">'+delivered+'</div></div>';
       html+='</div>';
       serverOrders.forEach(function(o){
-        var statusColor=o.status==='delivered'?'#1565C0':o.status==='dispatched'?'#2E7D32':'#E65100';
-        var statusBg=o.status==='delivered'?'#E3F2FD':o.status==='dispatched'?'#E8F5E9':'#FFF3E0';
-        var delivDate=o.deliveryDate?o.deliveryDate:'—';
+        var sc=o.status==='delivered'?'#1565C0':o.status==='dispatched'?'#2E7D32':'#E65100';
+        var sb=o.status==='delivered'?'#E3F2FD':o.status==='dispatched'?'#E8F5E9':'#FFF3E0';
+        var dd=o.deliveryDate||'—';
         var oid=String(o.id);
         html+='<div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--white);">';
         html+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">';
         html+='<div><div style="font-size:14px;font-weight:600;color:var(--text);">'+o.customerName+'</div>';
-        html+='<div style="font-size:12px;color:var(--text-muted);margin-top:1px;">📱 '+o.phone+'</div>';
+        html+='<div style="font-size:12px;color:var(--text-muted);">📱 '+o.phone+'</div>';
         if(o.email) html+='<div style="font-size:12px;color:var(--text-muted);">📧 '+o.email+'</div>';
         html+='</div>';
-        html+='<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:'+statusBg+';color:'+statusColor+';letter-spacing:0.06em;text-transform:uppercase;font-weight:500;flex-shrink:0;">'+o.status+'</span>';
+        html+='<span style="font-size:10px;padding:3px 10px;border-radius:20px;background:'+sb+';color:'+sc+';letter-spacing:0.06em;text-transform:uppercase;font-weight:500;">'+o.status+'</span>';
         html+='</div>';
         html+='<div style="background:var(--ivory);border-radius:6px;padding:10px;margin-bottom:10px;">';
         html+='<div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Products</div>';
-        html+='<div style="font-size:13px;color:var(--text);line-height:1.7;">'+o.products+'</div>';
-        html+='</div>';
+        html+='<div style="font-size:13px;color:var(--text);line-height:1.7;">'+o.products+'</div></div>';
         html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">';
-        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Order Date</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">'+o.date+'</div></div>';
-        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Est. Delivery</div><div style="font-size:12px;font-weight:500;color:var(--deep);margin-top:2px;">'+delivDate+'</div></div>';
-        html+='<div><div style="font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);">Amount</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">Rs.'+o.amount+'</div></div>';
+        html+='<div><div style="font-size:10px;text-transform:uppercase;color:var(--text-muted);">Order Date</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">'+o.date+'</div></div>';
+        html+='<div><div style="font-size:10px;text-transform:uppercase;color:var(--text-muted);">Est. Delivery</div><div style="font-size:12px;font-weight:500;color:var(--deep);margin-top:2px;">'+dd+'</div></div>';
+        html+='<div><div style="font-size:10px;text-transform:uppercase;color:var(--text-muted);">Amount</div><div style="font-size:12px;font-weight:500;color:var(--text);margin-top:2px;">Rs.'+o.amount+'</div></div>';
         html+='</div>';
-        if(o.address){html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 '+o.address+'</div>';}
-        if(o.notes){html+='<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;font-style:italic;">🔖 '+o.notes+'</div>';}
+        if(o.address) html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">📍 '+o.address+'</div>';
+        if(o.notes)   html+='<div style="font-size:11px;color:var(--text-muted);margin-bottom:10px;font-style:italic;">🔖 '+o.notes+'</div>';
         html+='<div style="display:flex;gap:6px;flex-wrap:wrap;">';
-        if(o.status==='pending') html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="updateOrderStatus(\'' +oid+ '\',\'dispatched\')">Mark Dispatched 🚚</button>';
-        if(o.status==='dispatched') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" onclick="updateOrderStatus(\'' +oid+ '\',\'delivered\')">Mark Delivered ✅</button>';
-        html+='<button class="asave" style="font-size:10px;padding:6px 12px;" onclick="sendUpdateWAById(\'' +oid+ '\',' +JSON.stringify(o.customerName)+ ',' +JSON.stringify(o.phone)+ ',' +JSON.stringify(o.products)+ ',' +JSON.stringify(o.date||'')+ ',' +JSON.stringify(o.deliveryDate||'')+ ',' +JSON.stringify(o.status)+ ')">💬 WhatsApp Customer</button>';
-        html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" onclick="deleteOrder(\''+oid+'\')">Delete</button>';
+        if(o.status==='pending')    html+='<button class="asave" style="font-size:10px;padding:6px 12px;" data-id="'+oid+'" data-st="dispatched" onclick="updateOrderStatus(this.dataset.id,this.dataset.st)">Mark Dispatched</button>';
+        if(o.status==='dispatched') html+='<button class="asave" style="font-size:10px;padding:6px 12px;background:#1565C0;" data-id="'+oid+'" data-st="delivered" onclick="updateOrderStatus(this.dataset.id,this.dataset.st)">Mark Delivered</button>';
+        html+='<button class="asave" style="font-size:10px;padding:6px 12px;" data-id="'+oid+'" data-phone="'+o.phone+'" data-name="'+encodeURIComponent(o.customerName)+'" data-products="'+encodeURIComponent(o.products)+'" data-date="'+encodeURIComponent(o.date||'')+'" data-delivery="'+encodeURIComponent(o.deliveryDate||'')+'" data-status="'+o.status+'" onclick="sendUpdateWA(this)">WhatsApp</button>';
+        html+='<button class="apdel" style="padding:6px 12px;border-radius:4px;font-size:10px;" data-id="'+oid+'" onclick="deleteOrder(this.dataset.id)">Delete</button>';
         html+='</div></div>';
       });
     }
@@ -2091,43 +2070,33 @@ function tabOrders(b){
     html+='<div class="afg"><label class="afl">Order Date *</label><input class="afi" type="date" id="oDate" value="'+new Date().toISOString().split('T')[0]+'"></div></div>';
     html+='<div class="afg"><label class="afl">Estimated Delivery</label><input class="afi" id="oDelivery" placeholder="Auto-calculated" readonly style="background:var(--gold-pale);color:var(--deep);font-weight:500;"></div>';
     html+='<div class="afg"><label class="afl">Notes (optional)</label><input class="afi" id="oNotes" placeholder="e.g. Gift wrap requested"></div>';
-    html+='<div style="display:flex;gap:8px;"><button class="asave asave-full" onclick="saveNewOrder()">Save Order</button>';
-    html+='<button class="acancel" onclick="document.getElementById(\'addOrderForm\').style.display=\'none\'">Cancel</button></div></div>';
+    html+='<div style="display:flex;gap:8px;"><button class="asave" onclick="saveNewOrder()">Save Order</button>';
+    html+='<button class="acancel" onclick="document.getElementById(&quot;addOrderForm&quot;).style.display=&quot;none&quot;">Cancel</button></div></div>';
     b.innerHTML=html;
-    var dateInp=document.getElementById('oDate');
-    if(dateInp){
-      function calcDelivery(){
-        var v=dateInp.value;if(!v)return;
-        var d=addWorkingDays(new Date(v),7);
-        var delInp=document.getElementById('oDelivery');
-        if(delInp) delInp.value=fmtDate(d);
-      }
-      dateInp.addEventListener('change',calcDelivery);
-      calcDelivery();
+    var di=document.getElementById('oDate');
+    if(di){
+      function calcDel(){var v=di.value;if(!v)return;var d=addWorkingDays(new Date(v),7);var el=document.getElementById('oDelivery');if(el)el.value=fmtDate(d);}
+      di.addEventListener('change',calcDel);calcDel();
     }
   });
 }
 
 function openAddOrder(){
-  var form=document.getElementById('addOrderForm');
-  if(form){form.style.display='block';form.scrollIntoView({behavior:'smooth',block:'center'});}
+  var f=document.getElementById('addOrderForm');
+  if(f){f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'center'});}
 }
 
 function saveNewOrder(){
   var name=(document.getElementById('oCustName').value||'').trim();
   var phone=(document.getElementById('oCustPhone').value||'').trim();
   var addr=(document.getElementById('oCustAddr').value||'').trim();
-  var prods_=(document.getElementById('oProducts').value||'').trim();
+  var prods=(document.getElementById('oProducts').value||'').trim();
   var amount=(document.getElementById('oAmount').value||'').trim();
   var notes=(document.getElementById('oNotes').value||'').trim();
   if(!name){toast('Please enter customer name');return;}
-  if(!prods_){toast('Please enter products purchased');return;}
+  if(!prods){toast('Please enter products');return;}
   if(!amount){toast('Please enter amount');return;}
-  apiFetch('save',{
-    name:name,phone:phone,address:addr,products:prods_,
-    amount:parseInt(amount),paymentId:'manual-'+Date.now(),
-    email:'',shipping:'',notes:notes
-  },function(err,res){
+  apiFetch('save',{name:name,phone:phone,address:addr,products:prods,amount:parseInt(amount),paymentId:'manual-'+Date.now(),email:'',shipping:'',notes:notes},function(err,res){
     if(err||!res||!res.success){toast('Error saving order');return;}
     toast('Order saved!');
     tabOrders(document.getElementById('admBody'));
@@ -2137,7 +2106,7 @@ function saveNewOrder(){
 function updateOrderStatus(id,status){
   apiFetch('update',{id:id,status:status},function(err,res){
     if(err||!res||!res.success){toast('Error updating order');return;}
-    toast('Order updated to: '+status);
+    toast('Updated to: '+status);
     tabOrders(document.getElementById('admBody'));
   });
 }
@@ -2145,20 +2114,26 @@ function updateOrderStatus(id,status){
 function deleteOrder(id){
   if(!confirm('Delete this order?'))return;
   apiFetch('delete',{id:id},function(err,res){
-    if(err||!res||!res.success){toast('Error deleting order');return;}
+    if(err||!res||!res.success){toast('Error deleting');return;}
     toast('Order deleted');
     tabOrders(document.getElementById('admBody'));
   });
 }
 
-function sendUpdateWAById(id,name,phone,products,date,deliveryDate,status){
+function sendUpdateWA(el){
+  var phone=el.dataset.phone;
   if(!phone)return;
+  var name=decodeURIComponent(el.dataset.name||'');
+  var products=decodeURIComponent(el.dataset.products||'');
+  var date=decodeURIComponent(el.dataset.date||'');
+  var deliveryDate=decodeURIComponent(el.dataset.delivery||'');
+  var status=(el.dataset.status||'').toUpperCase();
   var msg='Hi '+name+'! 🙏%0A%0AYour Ruhanvi order update:%0A%0A'
     +'📦 Products: '+encodeURIComponent(products)+'%0A'
     +'📅 Order Date: '+encodeURIComponent(date)+'%0A'
     +'🚚 Est. Delivery: '+encodeURIComponent(deliveryDate)+'%0A'
-    +'📋 Status: '+encodeURIComponent(status.toUpperCase())+'%0A%0A'
-    +'Thank you for choosing Ruhanvi 🌸 Your crystals have been cleansed and charged with intention before dispatch.';
+    +'📋 Status: '+encodeURIComponent(status)+'%0A%0A'
+    +'Thank you for choosing Ruhanvi 🌸';
   window.open('https://wa.me/91'+phone+'?text='+msg,'_blank');
 }
 
@@ -2591,7 +2566,6 @@ function submitPopup(){
   if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('Please enter a valid email address.');return;}
   if(!phone){alert('Please enter your phone number.');return;}
   var full=country+phone;
-  // Save to server
   fetch('/api/order?action=soulstar-save',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -2604,11 +2578,11 @@ function submitPopup(){
 
 function tabSoulsars(b){
   b.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);">Loading soulsars…</div>';
-  fetch('/api/order?action=soulstar-list&secret='+SERVER_SECRET)
+  fetch('/api/order?action=soulstar-list&secret=ruhanvi2025secret')
     .then(function(r){return r.json();})
     .then(function(res){
       if(!res||!res.success){
-        b.innerHTML='<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load soulsars. Check that JSONBIN_SOULSTAR_ID is set in Vercel environment variables.</div>';
+        b.innerHTML='<div style="padding:20px;color:#c04040;background:#fff0f0;border-radius:8px;font-size:13px;">⚠️ Could not load soulsars. Check JSONBIN_SOULSTAR_ID in Vercel environment variables.</div>';
         return;
       }
       var soulsars=res.soulsars||[];
@@ -2652,7 +2626,7 @@ function clearSoulsars(){
     fetch('/api/order?action=soulstar-clear',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({secret:SERVER_SECRET})
+      body:JSON.stringify({secret:'ruhanvi2025secret'})
     }).then(function(){
       tabSoulsars(document.getElementById('admBody'));
       toast('Cleared');
