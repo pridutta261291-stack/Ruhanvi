@@ -168,6 +168,176 @@ export default async function handler(req, res) {
     console.error('[order.js error]', err);
     res.status(500).json({ success: false, error: err.message });
   }
+}/**
+ * api/order.js — Ruhanvi Backend (Vercel Serverless)
+ * Handles: orders + soulstar signups
+ *
+ * Environment variables needed in Vercel:
+ *   JSONBIN_BIN_ID        (orders bin)
+ *   JSONBIN_SOULSTAR_ID   (soulsars bin)  ← create a 2nd bin for this
+ *   JSONBIN_API_KEY       (master key, same for both)
+ *   ORDER_SECRET          ruhanvi2025secret
+ *   ADMIN_EMAIL           hello@ruhanvi.com
+ */
+
+const ORDERS_BIN   = `https://api.jsonbin.io/v3/b/${process.env.JSONBIN_BIN_ID}`;
+const SOULSARS_BIN = `https://api.jsonbin.io/v3/b/${process.env.JSONBIN_SOULSTAR_ID}`;
+const API_KEY      = process.env.JSONBIN_API_KEY;
+const SECRET       = process.env.ORDER_SECRET || 'ruhanvi2025secret';
+
+function setCORS(res) {
+  res.setHeader('Access-Control-Allow-Origin',  '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
+async function readBin(binUrl) {
+  const r = await fetch(`${binUrl}/latest`, {
+    headers: { 'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false' }
+  });
+  if (!r.ok) throw new Error('JSONBin read failed: ' + r.status);
+  const data = await r.json();
+  return Array.isArray(data) ? data : [];
+}
+
+async function writeBin(binUrl, data) {
+  const r = await fetch(binUrl, {
+    method:  'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+    body:    JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('JSONBin write failed: ' + r.status);
+}
+
+function addWorkingDays(days) {
+  const d = new Date();
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) added++;
+  }
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function nowFormatted() {
+  return new Date().toLocaleString('en-IN', {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  });
+}
+
+export default async function handler(req, res) {
+  setCORS(res);
+  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+
+  const action = req.query.action || 'save';
+
+  try {
+
+    // LIST ORDERS
+    if (action === 'list') {
+      if (req.query.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      const orders = await readBin(ORDERS_BIN);
+      res.status(200).json({ success: true, orders });
+      return;
+    }
+
+    // SAVE ORDER
+    if (action === 'save') {
+      if (req.method !== 'POST') { res.status(405).end(); return; }
+      const body = req.body || {};
+      if (body.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      const order = {
+        id:           Date.now().toString() + Math.floor(Math.random() * 1000),
+        customerName: String(body.name      || 'Unknown').slice(0, 200),
+        email:        String(body.email     || '').slice(0, 200),
+        phone:        String(body.phone     || '').slice(0, 50),
+        address:      String(body.address   || '').slice(0, 500),
+        products:     String(body.products  || '').slice(0, 1000),
+        amount:       parseInt(body.amount) || 0,
+        shipping:     String(body.shipping  || '').slice(0, 100),
+        paymentId:    String(body.paymentId || '').slice(0, 100),
+        notes:        body.notes ? String(body.notes).slice(0, 300) : ('Razorpay ID: ' + String(body.paymentId || '')),
+        date:         nowFormatted(),
+        rawDate:      new Date().toISOString().split('T')[0],
+        deliveryDate: addWorkingDays(7),
+        status:       'pending',
+      };
+      const orders = await readBin(ORDERS_BIN);
+      orders.unshift(order);
+      await writeBin(ORDERS_BIN, orders);
+      res.status(200).json({ success: true, id: order.id });
+      return;
+    }
+
+    // UPDATE ORDER STATUS
+    if (action === 'update') {
+      if (req.method !== 'POST') { res.status(405).end(); return; }
+      const body = req.body || {};
+      if (body.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      const orders = await readBin(ORDERS_BIN);
+      const idx = orders.findIndex(o => String(o.id) === String(body.id));
+      if (idx === -1) { res.status(404).json({ success: false, error: 'Order not found' }); return; }
+      orders[idx].status = String(body.status).slice(0, 50);
+      await writeBin(ORDERS_BIN, orders);
+      res.status(200).json({ success: true });
+      return;
+    }
+
+    // DELETE ORDER
+    if (action === 'delete') {
+      if (req.method !== 'POST') { res.status(405).end(); return; }
+      const body = req.body || {};
+      if (body.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      const orders = await readBin(ORDERS_BIN);
+      await writeBin(ORDERS_BIN, orders.filter(o => String(o.id) !== String(body.id)));
+      res.status(200).json({ success: true });
+      return;
+    }
+
+    // SAVE SOULSTAR SIGNUP (public — no secret needed)
+    if (action === 'soulstar-save') {
+      if (req.method !== 'POST') { res.status(405).end(); return; }
+      const body = req.body || {};
+      const entry = {
+        id:    Date.now().toString(),
+        name:  String(body.name  || '').slice(0, 200),
+        email: String(body.email || '').slice(0, 200),
+        phone: String(body.phone || '').slice(0, 50),
+        date:  nowFormatted(),
+      };
+      const soulsars = await readBin(SOULSARS_BIN);
+      soulsars.unshift(entry);
+      await writeBin(SOULSARS_BIN, soulsars);
+      res.status(200).json({ success: true });
+      return;
+    }
+
+    // LIST SOULSARS (admin only)
+    if (action === 'soulstar-list') {
+      if (req.query.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      const soulsars = await readBin(SOULSARS_BIN);
+      res.status(200).json({ success: true, soulsars });
+      return;
+    }
+
+    // CLEAR ALL SOULSARS
+    if (action === 'soulstar-clear') {
+      if (req.method !== 'POST') { res.status(405).end(); return; }
+      const body = req.body || {};
+      if (body.secret !== SECRET) { res.status(403).json({ success: false, error: 'Forbidden' }); return; }
+      await writeBin(SOULSARS_BIN, []);
+      res.status(200).json({ success: true });
+      return;
+    }
+
+    res.status(400).json({ success: false, error: 'Unknown action' });
+
+  } catch (err) {
+    console.error('[order.js error]', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 }
 
 /**
